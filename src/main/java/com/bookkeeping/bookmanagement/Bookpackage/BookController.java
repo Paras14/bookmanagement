@@ -3,7 +3,9 @@ package com.bookkeeping.bookmanagement.Bookpackage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,9 +44,19 @@ public class BookController {
     }
 
     @PostMapping("/books")
-    public Book addBook(@RequestBody Book book){
-        return bookService.addBook(book.getIsbn(), book.getBookName(),
-                book.getAuthorName(), book.getGenre(), false);
+    public ResponseEntity<Book> addBook(@RequestBody Book book){
+        try{
+            Book createdBook = bookService.addBook(book.getIsbn(), book.getBookName(),
+                    book.getAuthorName(), book.getGenre(), false);
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/{path}")
+                    .buildAndExpand(createdBook.getIsbn())
+                    .toUri();
+            return ResponseEntity.created(location).body(createdBook);
+        } catch (IllegalStateException e){
+            //Handle exception in case the book already exists
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
 

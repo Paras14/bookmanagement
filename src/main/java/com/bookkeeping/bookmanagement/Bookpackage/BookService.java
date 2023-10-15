@@ -41,6 +41,11 @@ public class BookService {
     }
 
     public Book addBook(String isbn, String bookName, String authorName, Book.Genre genre, boolean readStatus){
+        //Check if the book already exists
+        Predicate<? super Book> predicate = book -> book.getIsbn().equals(isbn);
+        if(books.stream().anyMatch(predicate)){
+            throw new IllegalStateException("Book with ISBN " + isbn + "already exists.");
+        }
         Book book = new Book(isbn, bookName, authorName, genre, readStatus);
         books.add(book);
         return book;
