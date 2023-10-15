@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class BookController {
@@ -16,13 +17,18 @@ public class BookController {
     }
 
     @GetMapping("/books")
-    public List<Book> getAllBooks(){
-        return bookService.retrieveAllBooks();
+    public ResponseEntity<List<Book>> getAllBooks(){
+        List<Book> books = bookService.retrieveAllBooks();
+        if(books.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
     @GetMapping("books/{isbn}")
-    public Book retrieveBook(@PathVariable String isbn){
-        return bookService.findByIsbn(isbn);
+    public ResponseEntity<Book> retrieveBook(@PathVariable String isbn){
+        Optional<Book> book = bookService.findByIsbn(isbn);
+        return book.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("books/{isbn}")

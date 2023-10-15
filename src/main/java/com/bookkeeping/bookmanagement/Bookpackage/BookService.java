@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static com.bookkeeping.bookmanagement.Bookpackage.Book.Genre.*;
@@ -22,10 +23,10 @@ public class BookService {
 
     }
 
-    public Book findByIsbn(String isbn){
+    public Optional<Book> findByIsbn(String isbn){
         Predicate<?super Book> predicate =
                 book -> book.getIsbn().equals(isbn);
-        return books.stream().filter(predicate).findFirst().get();
+        return books.stream().filter(predicate).findFirst();
     }
 
     public List<Book> retrieveAllBooks(){
