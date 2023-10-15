@@ -1,8 +1,8 @@
 package com.bookkeeping.bookmanagement.Bookpackage;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,5 +24,22 @@ public class BookController {
     public Book retrieveBook(@PathVariable String isbn){
         return bookService.findByIsbn(isbn);
     }
+
+    @DeleteMapping("books/{isbn}")
+    public ResponseEntity<String> deleteBook(@PathVariable String isbn){
+        boolean isDeleted = bookService.deleteByIsbn(isbn);
+        if(isDeleted){
+            return new ResponseEntity<>("Book with ISBN " + isbn + " was deleted.", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("Book with ISBN " + isbn + " not found.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/books")
+    public Book addBook(@RequestBody Book book){
+        return bookService.addBook(book.getIsbn(), book.getBookName(),
+                book.getAuthorName(), book.getGenre(), false);
+    }
+
 
 }

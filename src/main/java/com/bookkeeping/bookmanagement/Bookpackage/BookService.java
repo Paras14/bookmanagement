@@ -32,4 +32,17 @@ public class BookService {
         return books;
     }
 
+    public boolean deleteByIsbn(String isbn){
+        Predicate<? super Book> predicate = book -> book.getIsbn().equals(isbn);
+        boolean isBookPresent = books.stream().anyMatch(predicate);
+        books.removeIf(predicate);
+        return isBookPresent;  // Return whether a book was deleted
+    }
+
+    public Book addBook(String isbn, String bookName, String authorName, Book.Genre genre, boolean readStatus){
+        Book book = new Book(isbn, bookName, authorName, genre, readStatus);
+        books.add(book);
+        return book;
+    }
+
 }
