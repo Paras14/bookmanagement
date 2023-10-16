@@ -11,12 +11,16 @@ public class Book {
     private String bookName;
     private String authorName;
     private Genre genre;
+
     private boolean readStatus;
 
     public Book() {
 
     }
 
+    public void setReadStatus(boolean readStatus) {
+        this.readStatus = readStatus;
+    }
 
     public String getIsbn() {
         return isbn;

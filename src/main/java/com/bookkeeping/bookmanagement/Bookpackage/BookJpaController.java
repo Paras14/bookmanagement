@@ -8,21 +8,19 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 public class BookJpaController {
-//    private BookService bookService;
     private BookRepository bookRepository;
 
     public BookJpaController(BookRepository bookRepository){
-//        this.bookService = bookService;
         this.bookRepository = bookRepository;
     }
 
     @GetMapping("/books")
     public ResponseEntity<List<Book>> getAllBooks(){
-//        List<Book> books = bookService.retrieveAllBooks();
         List<Book> books = bookRepository.findAll();
         if(books.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -31,7 +29,6 @@ public class BookJpaController {
 
     @GetMapping("books/{isbn}")
     public ResponseEntity<Book> retrieveBook(@PathVariable String isbn){
-//        Optional<Book> book = bookService.findByIsbn(isbn);
         Optional<Book> book = bookRepository.findById(isbn);
         return book.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -39,7 +36,6 @@ public class BookJpaController {
 
     @DeleteMapping("books/{isbn}")
     public ResponseEntity<String> deleteBook(@PathVariable String isbn){
-//        boolean isDeleted = bookService.deleteByIsbn(isbn);
         boolean isExists = bookRepository.existsById(isbn);
         if(isExists){
             bookRepository.deleteById(isbn);
@@ -63,5 +59,20 @@ public class BookJpaController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
+    }
+
+    @PutMapping("/books/{isbn}")
+    public ResponseEntity<Book> editBookReadStatus(@PathVariable String isbn, @RequestBody Map<String, Object> updates){
+        Optional<Book> existingBookOptional = bookRepository.findById(isbn);
+        if (!existingBookOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Book existingBook = existingBookOptional.get();
+
+        //To only update the read status
+        existingBook.setReadStatus((boolean)updates.get("readStatus"));
+        bookRepository.save(existingBook);
+
+        return ResponseEntity.ok(existingBook);
     }
 }
