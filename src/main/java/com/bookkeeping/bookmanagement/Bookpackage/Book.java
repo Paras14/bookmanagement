@@ -1,12 +1,21 @@
 package com.bookkeeping.bookmanagement.Bookpackage;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
 public class Book {
 
+    @Id
     private String isbn;
     private String bookName;
     private String authorName;
     private Genre genre;
     private boolean readStatus;
+
+    public Book() {
+
+    }
 
 
     public String getIsbn() {
