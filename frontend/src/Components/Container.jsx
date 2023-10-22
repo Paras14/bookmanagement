@@ -1,4 +1,5 @@
 import React from "react";
+import BookCard from "./BookCard";
 
 function Container() {
   return (
@@ -7,8 +8,8 @@ function Container() {
         <button class="add-books">New book</button>
       </div>
       <div className="books-container">
-            
-        </div>
+        <BookCard />
+      </div>
     </div>
   );
 }

@@ -139,6 +139,76 @@ html{
   flex-wrap: wrap;
 }
 
+.book-card{
+  height: 160px;
+  width: 80px;
+  padding: 15px;
+  background-color: #B72C3E;
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  font-size: 30px;
+  font-family: 'Oswald', sans-serif;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.book-options{
+  display: flex;
+  flex-direction: row;
+}
+
+.delete-button{
+  flex: 0 1 10px;
+  background-color: bisque;
+}
+
+.delete-button:hover{
+  flex: 0 1 10px;
+  background-color: coral;
+}
+
+.delete-button:active{
+  flex: 0 1 10px;
+  background-color: red;
+  transform: translateY(1px);
+}
+
+.read-status{
+  background-color: #D6D6E7;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+  width: 48px;
+  margin-left: 15px;
+}
+
+.read-status:hover{
+  background-color: orange;
+}
+
+.read-status:active{
+  background-color: #36395A;
+  transform: translateY(1px);
+}
+
+.read{
+  background-color: #743B14;
+}
+
+.not-read{
+  background-color: greenyellow;
+}
+
+.book-card h3{
+  margin-top: 1rem;
+  text-align: center;
+}
+
 .footer-section{
   height: 25px;
   background-color: #743B14;
