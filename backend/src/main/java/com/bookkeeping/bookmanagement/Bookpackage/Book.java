@@ -1,15 +1,21 @@
 package com.bookkeeping.bookmanagement.Bookpackage;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class Book {
 
     @Id
+    @Size(max = 14, min = 10, message = "Enter a Valid ISBN")
+    @Column(unique = true)
     private String isbn;
+    @NotBlank(message = "Book name can't be empty")
     private String bookName;
+    @NotBlank(message = "Author name can't be empty")
     private String authorName;
+    @Enumerated(EnumType.STRING)
     private Genre genre;
 
     private boolean readStatus;

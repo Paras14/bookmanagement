@@ -1,6 +1,7 @@
 package com.bookkeeping.bookmanagement.Bookpackage;
 
 import com.bookkeeping.bookmanagement.Bookpackage.repository.BookRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +47,7 @@ public class BookJpaController {
     }
 
     @PostMapping("/books")
-    public ResponseEntity<Book> addBook(@RequestBody Book book) {
+    public ResponseEntity<Book> addBook(@Valid @RequestBody Book book) {
         try {
             Book createdBook = bookRepository.save(book);
             URI location = ServletUriComponentsBuilder.fromCurrentRequest()
