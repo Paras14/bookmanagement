@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BookCard from "./BookCard";
 import axios from "axios";
 
@@ -36,20 +36,21 @@ function Container() {
     });
   };
 
-  const getAllTheBooks = () => {
+  // const getAllTheBooks = () => {
+    
+  // };
+
+  useEffect(() => {
     axios.get('http://localhost:8080/books')
-        .then((res) => {
-          console.log(res.data);
-          setBooks(res.data);
-        })
+        .then((res) => setBooks(res.data))
         .catch(err => console.log(err));
-  };
+  }, [])
 
   return (
     <div className="body-section">
       <div>
         <button className="add-books">New book</button>
-        <button onClick={getAllTheBooks}>ApiTesterButton</button>
+        {/* <button onClick={getAllTheBooks}>ApiTesterButton</button> */}
       </div>
       <div className="books-container">
         {books.map((book) => (
