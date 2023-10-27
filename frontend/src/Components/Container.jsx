@@ -43,7 +43,6 @@ function Container() {
           setBooks(res.data);
         })
         .catch(err => console.log(err));
-        
   };
 
   return (
