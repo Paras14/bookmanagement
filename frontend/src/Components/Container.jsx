@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import BookCard from "./BookCard";
 
 const initialBooks = [
@@ -19,9 +19,7 @@ const initialBooks = [
 ];
 
 function Container() {
-  // useEffect(() => {
 
-  // },[books]);
   const [books, setBooks] = useState(initialBooks);
 
   const changeBookReadState = (isbn) => {

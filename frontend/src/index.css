@@ -157,9 +157,11 @@ html{
 .book-options{
   display: flex;
   flex-direction: row;
+  align-items: flex-end;
 }
 
 .delete-button{
+  max-height: 24px;
   flex: 0 1 10px;
   background-color: bisque;
 }
@@ -182,9 +184,9 @@ html{
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2px;
-  width: 48px;
-  margin-left: 15px;
+  padding: 1px;
+  width: 66px;
+  margin-left: 10px;
 }
 
 .read-status:hover{
