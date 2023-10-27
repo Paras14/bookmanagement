@@ -3,13 +3,13 @@ import deleteLogo from '../Assets/delete-logo.png';
 
 function BookCard(props) {
   return (
-    <div class="book-card" data="">
+    <div className="book-card" data="">
       <h3>{props.title}</h3>
-      <div class="book-options">
-        <div class="delete-button">
-          <img src={deleteLogo} alt="delete-button" srcset="" />
+      <div className="book-options">
+        <div className="delete-button">
+          <img src={deleteLogo} alt="delete-button" srcSet="" />
         </div>
-        <div class="read-status">{props.readStatus ? 'Read': 'Not Read'}</div>
+        <button className="read-status" onClick={() => props.changeBookReadState(props.isbn)}>{props.readStatus ? 'Read': 'Not Read'}</button>
       </div>
     </div>
   );
