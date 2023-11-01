@@ -2,26 +2,9 @@ import React, { useState, useEffect } from "react";
 import BookCard from "./BookCard";
 import axios from "axios";
 
-const initialBooks = [
-  {
-    isbn: "978-0142424179",
-    bookName: "The Fault in Our Stars",
-    authorName: "John Green",
-    genre: "ROMANCE",
-    readStatus: false,
-  },
-  {
-    isbn: "978-0735211292",
-    bookName: "Atomic Habits",
-    authorName: "James Clear",
-    genre: "SELF_HELP",
-    readStatus: true,
-  },
-];
-
 function Container() {
 
-  const [books, setBooks] = useState(initialBooks);
+  const [books, setBooks] = useState([]);
 
   const changeBookReadState = (isbn) => {
     setBooks((prevBooks) => {
@@ -53,7 +36,7 @@ function Container() {
         {/* <button onClick={getAllTheBooks}>ApiTesterButton</button> */}
       </div>
       <div className="books-container">
-        {books.map((book) => (
+        {books.length>0 ? books.map((book) => (
           <BookCard
             key={book.isbn}
             isbn={book.isbn}
@@ -61,7 +44,7 @@ function Container() {
             readStatus={book.readStatus}
             changeBookReadState={changeBookReadState}
           />
-        ))}
+        )):'No books available'}
       </div>
     </div>
   );
