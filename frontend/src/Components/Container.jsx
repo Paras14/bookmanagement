@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import BookCard from "./BookCard";
 import axios from "axios";
+import BookAddForm from "./BookAddForm";
 
 function Container() {
 
@@ -33,6 +34,7 @@ function Container() {
     <div className="body-section">
       <div>
         <button className="add-books">New book</button>
+        <BookAddForm/>
         {/* <button onClick={getAllTheBooks}>ApiTesterButton</button> */}
       </div>
       <div className="books-container">
