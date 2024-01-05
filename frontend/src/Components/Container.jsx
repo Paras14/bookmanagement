@@ -11,7 +11,7 @@ function Container() {
 
   const [newBookData, setNewBookData] = useState({isbn:'', bookName: '', authorName: '', genre: '', readStatus: false});
 
-  const addBookHandler = () => {
+  const addBookFormHandler = () => {
     setShowForm(!showForm);
   };
 
@@ -30,7 +30,10 @@ function Container() {
 
   const handleNewBookSubmit = (e) => {
     e.preventDefault();
-    console.log(newBookData);
+    // console.log(newBookData);
+    axios.post('http://localhost:8080/books', newBookData)
+          .then((res) => console.log(res))
+          .catch(err => console.log(err))
   };
 
   // const getAllTheBooks = () => {
@@ -46,7 +49,7 @@ function Container() {
   return (
     <div className="body-section">
       <div>
-        <button className="add-books" onClick={addBookHandler}>New book</button>
+        <button className="add-books" onClick={addBookFormHandler}>New book</button>
         <BookAddForm 
             showForm={showForm}
             setShowForm={setShowForm} 
