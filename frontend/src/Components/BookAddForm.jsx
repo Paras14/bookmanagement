@@ -1,8 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-function BookAddForm() {
+function BookAddForm({showForm, setShowForm}) {
 
     const [newBookData, setNewBookData] = useState({bookName: '', authorName: '', genre: ''});
+    const formRef = useRef(null);
+
+    useEffect(() => {
+      const handleClickOutside = (e) => {
+        if(formRef.current && !formRef.current.contains(e.target)){
+          setShowForm(false);
+        }
+      }
+
+      document.addEventListener("mousedown", handleClickOutside);
+
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      }
+
+    }, [formRef, setShowForm])
 
     const handleChange = (e) => {
         const {name, value} = e.target;
@@ -15,8 +31,8 @@ function BookAddForm() {
     };
 
   return (
-    <div className="form-bg">
-      <div className="add-book-form">
+    <div className={showForm ?"form-bg form-bg-visible" : "form-bg"}>
+      <div className="add-book-form" ref={formRef}>
         <form onSubmit={handleSubmit}>
           <label htmlFor="bookName">Book Name</label>
           <input type="text" name="bookName" value={newBookData.bookName} onChange={handleChange}/>

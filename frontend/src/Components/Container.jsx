@@ -7,6 +7,12 @@ function Container() {
 
   const [books, setBooks] = useState([]);
 
+  const [showForm, setShowForm] = useState(false);
+
+  const addBookHandler = () => {
+    setShowForm(!showForm);
+  };
+
   const changeBookReadState = (isbn) => {
     setBooks((prevBooks) => {
       const updatedBooks = [...prevBooks];
@@ -33,8 +39,8 @@ function Container() {
   return (
     <div className="body-section">
       <div>
-        <button className="add-books">New book</button>
-        <BookAddForm/>
+        <button className="add-books" onClick={addBookHandler}>New book</button>
+        <BookAddForm showForm={showForm} setShowForm={setShowForm}/>
         {/* <button onClick={getAllTheBooks}>ApiTesterButton</button> */}
       </div>
       <div className="books-container">
