@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6070995-96a0-4a26-8e8c-9cfcb91f6ae6" name="Changes" comment="Enable CORS mapping for the whole application">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="d6070995-96a0-4a26-8e8c-9cfcb91f6ae6" name="Changes" comment="Enable CORS mapping for the whole application" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -119,6 +117,7 @@
       <workItem from="1702307122804" duration="307000" />
       <workItem from="1702307447664" duration="744000" />
       <workItem from="1703614131522" duration="42000" />
+      <workItem from="1704428118530" duration="462000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Commit">
       <option name="closed" value="true" />
