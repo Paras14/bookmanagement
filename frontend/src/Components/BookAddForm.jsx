@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 
-function BookAddForm({showForm, setShowForm}) {
+function BookAddForm({showForm, setShowForm, newBookData, setNewBookData, handleNewBookSubmit}) {
 
     const [invalidBookData, setInvalidBookData] = useState(false);
 
-    const [newBookData, setNewBookData] = useState({isbn:'', bookName: '', authorName: '', genre: '', readStatus: false});
     const formRef = useRef(null);
 
     useEffect(() => {
@@ -25,40 +24,25 @@ function BookAddForm({showForm, setShowForm}) {
     const handleChange = (e) => {
         const {name, value} = e.target;
 
-        const isbnRegex = /^\d{3}-\d{9}[\dX]$/;
-        if (name === 'isbn' && !isbnRegex.test(value)) {
-            setInvalidBookData(true);
-            return;
+        let isInvalidData = false;
+
+        if (name === 'isbn' && !/^\d{3}-\d{9}[\dX]$/.test(value)) {
+            isInvalidData = true;
         }
 
-        if (name === 'bookName' && value.trim() === '') {
-            setInvalidBookData(true);
-            return;
-        }
-
-        if (name === 'authorName' && value.trim() === '') {
-            setInvalidBookData(true);
-            return;
-        }
-
-        if (name === 'genre' && value === '') {
-            setInvalidBookData(true);
-            return;
+        if ((name === 'bookName' || name === 'authorName') && value.trim() === '') {
+            isInvalidData = true;
         }
 
         setNewBookData({...newBookData, [name]: value });
-        setInvalidBookData(false);
+        setInvalidBookData(isInvalidData);
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log(newBookData);
-    };
 
   return (
     <div className={showForm ?"form-bg form-bg-visible" : "form-bg"}>
       <div className="add-book-form" ref={formRef}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleNewBookSubmit}>
           {invalidBookData ? <p style={{color: 'red'}}>Invalid values!</p> : <></>}
           <label htmlFor="bookName">Book Name</label>
           <input type="text" name="bookName" value={newBookData.bookName} onChange={handleChange}/>

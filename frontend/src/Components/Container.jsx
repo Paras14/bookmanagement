@@ -9,6 +9,8 @@ function Container() {
 
   const [showForm, setShowForm] = useState(false);
 
+  const [newBookData, setNewBookData] = useState({isbn:'', bookName: '', authorName: '', genre: '', readStatus: false});
+
   const addBookHandler = () => {
     setShowForm(!showForm);
   };
@@ -26,6 +28,11 @@ function Container() {
     });
   };
 
+  const handleNewBookSubmit = (e) => {
+    e.preventDefault();
+    console.log(newBookData);
+  };
+
   // const getAllTheBooks = () => {
     
   // };
@@ -40,7 +47,13 @@ function Container() {
     <div className="body-section">
       <div>
         <button className="add-books" onClick={addBookHandler}>New book</button>
-        <BookAddForm showForm={showForm} setShowForm={setShowForm}/>
+        <BookAddForm 
+            showForm={showForm}
+            setShowForm={setShowForm} 
+            newBookData={newBookData} 
+            setNewBookData={setNewBookData}
+            handleNewBookSubmit={handleNewBookSubmit}
+            />
         {/* <button onClick={getAllTheBooks}>ApiTesterButton</button> */}
       </div>
       <div className="books-container">
