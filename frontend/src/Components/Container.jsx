@@ -27,6 +27,13 @@ function Container() {
          .catch(err => console.log(err));
   };
 
+  const deleteBookFromLibrary = (isbn) => {
+
+    axios.delete(`http://localhost:8080/books/${isbn}`)
+         .then((res) => console.log(res))
+         .catch(err => console.log(err));
+  };
+
   const handleNewBookSubmit = (e) => {
     e.preventDefault();
     // console.log(newBookData);
@@ -69,6 +76,7 @@ function Container() {
             title={book.bookName}
             readStatus={book.readStatus}
             changeBookReadState={changeBookReadState}
+            deleteBookFromLibrary={deleteBookFromLibrary}
           />
         )):'No books available'}
       </div>

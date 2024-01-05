@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6070995-96a0-4a26-8e8c-9cfcb91f6ae6" name="Changes" comment="Enable CORS mapping for the whole application">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/security/CorsConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/security/CorsConfiguration.java" afterDir="false" />
-    </list>
+    <list default="true" id="d6070995-96a0-4a26-8e8c-9cfcb91f6ae6" name="Changes" comment="Updated CorsMapping policy" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,6 +20,20 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Paras14"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="ae500471-b89a-4351-94b9-d0fcf85545f8" />
+        <option name="url" value="https://github.com/Paras14/bookmanagement" />
+      </UrlAndAccount>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -121,7 +132,7 @@
       <workItem from="1702307447664" duration="744000" />
       <workItem from="1703614131522" duration="42000" />
       <workItem from="1704428118530" duration="1918000" />
-      <workItem from="1704465873896" duration="1326000" />
+      <workItem from="1704465873896" duration="1939000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Commit">
       <option name="closed" value="true" />
@@ -211,7 +222,15 @@
       <option name="project" value="LOCAL" />
       <updated>1698439260379</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Updated CorsMapping policy">
+      <option name="closed" value="true" />
+      <created>1704467865701</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1704467865701</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -241,6 +260,7 @@
     <MESSAGE value="Add Put mapping to update readStatus of book" />
     <MESSAGE value="Add Validations to Book Entity and Postmapping" />
     <MESSAGE value="Enable CORS mapping for the whole application" />
-    <option name="LAST_COMMIT_MESSAGE" value="Enable CORS mapping for the whole application" />
+    <MESSAGE value="Updated CorsMapping policy" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated CorsMapping policy" />
   </component>
 </project>
