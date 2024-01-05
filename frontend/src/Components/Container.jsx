@@ -12,7 +12,7 @@ function Container() {
   const [newBookData, setNewBookData] = useState({isbn:'', bookName: '', authorName: '', genre: '', readStatus: false});
 
   const addBookFormHandler = () => {
-    setShowForm(!showForm);
+    setShowForm(true);
   };
 
   const changeBookReadState = (isbn) => {
@@ -32,7 +32,10 @@ function Container() {
     e.preventDefault();
     // console.log(newBookData);
     axios.post('http://localhost:8080/books', newBookData)
-          .then((res) => console.log(res))
+          .then((res) => {
+            console.log(res);
+            setShowForm(false);
+          })
           .catch(err => console.log(err))
   };
 
@@ -44,7 +47,7 @@ function Container() {
     axios.get('http://localhost:8080/books')
         .then((res) => setBooks(res.data))
         .catch(err => console.log(err));
-  }, [])
+  }, [books])
 
   return (
     <div className="body-section">
