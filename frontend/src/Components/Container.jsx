@@ -16,16 +16,15 @@ function Container() {
   };
 
   const changeBookReadState = (isbn) => {
-    setBooks((prevBooks) => {
-      const updatedBooks = [...prevBooks];
-      let bookIndex = updatedBooks.findIndex((book) => book.isbn === isbn);
-      const bookToUpdate = updatedBooks[bookIndex];
-      updatedBooks[bookIndex] = {
-        ...bookToUpdate,
-        readStatus: !bookToUpdate.readStatus
-      };
-      return updatedBooks;
-    });
+
+    const isbnBook = books.filter((book) => book.isbn === isbn)[0];
+    console.log(isbnBook);
+    isbnBook.readStatus = !isbnBook.readStatus;
+    console.log(isbnBook);
+
+    axios.put(`http://localhost:8080/books/${isbn}`, isbnBook)
+         .then((res) => console.log(res))
+         .catch(err => console.log(err));
   };
 
   const handleNewBookSubmit = (e) => {
