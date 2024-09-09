@@ -1,8 +1,11 @@
-package com.bookkeeping.bookmanagement.Bookpackage;
+package com.bookkeeping.bookmanagement.Bookpackage.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Book {
@@ -20,8 +23,19 @@ public class Book {
 
     private boolean readStatus;
 
+    @ManyToMany(mappedBy = "books")
+    private Set<Users> users = new HashSet<>();
+
     public Book() {
 
+    }
+
+    public Set<Users> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<Users> users) {
+        this.users = users;
     }
 
     public void setReadStatus(boolean readStatus) {

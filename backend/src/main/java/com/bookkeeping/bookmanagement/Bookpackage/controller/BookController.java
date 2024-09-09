@@ -1,5 +1,6 @@
-package com.bookkeeping.bookmanagement.Bookpackage;
+package com.bookkeeping.bookmanagement.Bookpackage.controller;
 
+import com.bookkeeping.bookmanagement.Bookpackage.model.Book;
 import com.bookkeeping.bookmanagement.Bookpackage.repository.BookRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -13,10 +14,10 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-public class BookJpaController {
-    private BookRepository bookRepository;
+public class BookController {
+    private final BookRepository bookRepository;
 
-    public BookJpaController(BookRepository bookRepository){
+    public BookController(BookRepository bookRepository){
         this.bookRepository = bookRepository;
     }
 
@@ -65,7 +66,7 @@ public class BookJpaController {
     @PutMapping("/books/{isbn}")
     public ResponseEntity<Book> editBookReadStatus(@PathVariable String isbn, @RequestBody Map<String, Object> updates){
         Optional<Book> existingBookOptional = bookRepository.findById(isbn);
-        if (!existingBookOptional.isPresent()){
+        if (existingBookOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         Book existingBook = existingBookOptional.get();

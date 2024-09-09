@@ -1,13 +1,16 @@
-package com.bookkeeping.bookmanagement.Bookpackage;
+package com.bookkeeping.bookmanagement.Bookpackage.service;
+
+import com.bookkeeping.bookmanagement.Bookpackage.model.Book;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import static com.bookkeeping.bookmanagement.Bookpackage.Book.Genre.*;
+import static com.bookkeeping.bookmanagement.Bookpackage.model.Book.Genre.*;
 
 //@Service
+//NOT USED AFTER SHIFT TO JPA, NOT REMOVING RIGHT NOW IN-CASE IF USE COMES IN FUTURE
 public class BookService {
 
     private static List<Book> books = new ArrayList<>();
