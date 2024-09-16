@@ -1,55 +1,129 @@
 package com.bookkeeping.bookmanagement.Bookpackage.service;
 
+import com.bookkeeping.bookmanagement.Bookpackage.dtos.BookDTO;
+import com.bookkeeping.bookmanagement.Bookpackage.dtos.UserBookDTO;
 import com.bookkeeping.bookmanagement.Bookpackage.model.Book;
+import com.bookkeeping.bookmanagement.Bookpackage.model.UserBook;
+import com.bookkeeping.bookmanagement.Bookpackage.model.UserBookId;
+import com.bookkeeping.bookmanagement.Bookpackage.model.Users;
+import com.bookkeeping.bookmanagement.Bookpackage.repository.BookRepository;
+import com.bookkeeping.bookmanagement.Bookpackage.repository.UserBookRepository;
+import com.bookkeeping.bookmanagement.Bookpackage.repository.UserRepository;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import static com.bookkeeping.bookmanagement.Bookpackage.model.Book.Genre.*;
-
-//@Service
-//NOT USED AFTER SHIFT TO JPA, NOT REMOVING RIGHT NOW IN-CASE IF USE COMES IN FUTURE
+@Service
 public class BookService {
 
-    private static List<Book> books = new ArrayList<>();
+    private final BookRepository bookRepository;
+    private final UserRepository userRepository;
+    private final UserBookRepository userBookRepository;
 
-    static {
-        books.add(new Book("978-1840227802", "Alice in a Wonderland", "Lewis Carroll", FANTASY, false));
-        books.add(new Book("978-0735211292", "Atomic Habits", "James Clear", SELF_HELP, true));
-        books.add(new Book("978-1544507873", "Can't Hurt Me", "David Goggins", SELF_HELP, true));
-        books.add(new Book("978-0142424179", "The Fault in Our Stars", "John Green", ROMANCE, false));
-        books.add(new Book("978-0307887436","Ready Player One", "Ernest Cline", ROMANCE, false));
-
+    public BookService(BookRepository bookRepository, UserRepository userRepository,
+                       UserBookRepository userBookRepository){
+        this.bookRepository = bookRepository;
+        this.userRepository = userRepository;
+        this.userBookRepository = userBookRepository;
     }
 
-    public Optional<Book> findByIsbn(String isbn){
-        Predicate<?super Book> predicate =
-                book -> book.getIsbn().equals(isbn);
-        return books.stream().filter(predicate).findFirst();
+    public UserBookDTO addBookToUser(BookDTO bookDTO, String username){
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Book book = bookRepository.findById(bookDTO.getIsbn())
+                .orElseGet(() -> {
+                    Book newBook = new Book();
+                    newBook.setIsbn(bookDTO.getIsbn());
+                    newBook.setBookName(bookDTO.getBookName());
+                    newBook.setAuthorName(bookDTO.getAuthorName());
+                    newBook.setGenre(bookDTO.getGenre());
+                    return bookRepository.save(newBook);
+                });
+
+        UserBook userBook = new UserBook();
+        userBook.setId(new UserBookId(user.getId(), book.getIsbn()));
+        userBook.setUser(user);
+        userBook.setBook(book);
+        userBook.setReadStatus(false);
+
+        UserBook savedUserBook = userBookRepository.save(userBook);
+        return convertToDTO(savedUserBook);
     }
 
-    public List<Book> retrieveAllBooks(){
-        return books;
+    public List<UserBookDTO> getUserBooks(String username) {
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        List<UserBook> userBooks = userBookRepository.findByUserId(user.getId());
+        return userBooks.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public boolean deleteByIsbn(String isbn){
-        Predicate<? super Book> predicate = book -> book.getIsbn().equals(isbn);
-        boolean isBookPresent = books.stream().anyMatch(predicate);
-        books.removeIf(predicate);
-        return isBookPresent;  // Return whether a book was deleted
+    public List<BookDTO> getAllBooks() {
+        return bookRepository.findAll().stream().map(this::convertToBookDTO)
+                .collect(Collectors.toList());
     }
 
-    public Book addBook(String isbn, String bookName, String authorName, Book.Genre genre, boolean readStatus){
-        //Check if the book already exists
-        Predicate<? super Book> predicate = book -> book.getIsbn().equals(isbn);
-        if(books.stream().anyMatch(predicate)){
-            throw new IllegalStateException("Book with ISBN " + isbn + "already exists.");
-        }
-        Book book = new Book(isbn, bookName, authorName, genre, readStatus);
-        books.add(book);
-        return book;
+    public Optional<UserBookDTO> getUserBooksByIsbn(String isbn, String username) {
+        Users user = getUserByUsername(username);
+        return userBookRepository.findByUserIdAndBookIsbn(user.getId(), isbn)
+                .map(this::convertToDTO);
+    }
+
+    public Optional<UserBookDTO> updateReadStatus(String isbn, String username, boolean readStatus) {
+        Users user = getUserByUsername(username);
+        return userBookRepository.findByUserIdAndBookIsbn(user.getId(), isbn)
+                .map(userBook -> {
+                    userBook.setReadStatus(readStatus);
+                    return convertToDTO(userBookRepository.save(userBook));
+                });
+    }
+
+    public void removeBookFromUser(String isbn, String username){
+        Users user = getUserByUsername(username);
+        userBookRepository.findByUserIdAndBookIsbn(user.getId(), isbn)
+                .ifPresent(userBook -> {
+                    userBookRepository.delete(userBook);
+                    if (!userBookRepository.existsByBookIsbn(isbn)){
+                        bookRepository.deleteById(isbn);
+                    }
+                });
+    }
+
+    public void deleteBook(String isbn){
+        bookRepository.findById(isbn).ifPresent(book -> {
+            userBookRepository.deleteByBookIsbn(isbn);
+            bookRepository.delete(book);
+        });
+    }
+
+    private Users getUserByUsername(String username){
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    }
+
+    private UserBookDTO convertToDTO(UserBook userBook) {
+        UserBookDTO dto = new UserBookDTO();
+        dto.setIsbn(userBook.getBook().getIsbn());
+        dto.setBookName(userBook.getBook().getBookName());
+        dto.setAuthorName(userBook.getBook().getAuthorName());
+        dto.setGenre(userBook.getBook().getGenre());
+        dto.setReadStatus(userBook.isReadStatus());
+        return dto;
+    }
+
+    private BookDTO convertToBookDTO(Book book) {
+        BookDTO dto = new BookDTO();
+        dto.setIsbn(book.getIsbn());
+        dto.setBookName(book.getBookName());
+        dto.setAuthorName(book.getAuthorName());
+        dto.setGenre(book.getGenre());
+        return dto;
     }
 
 }

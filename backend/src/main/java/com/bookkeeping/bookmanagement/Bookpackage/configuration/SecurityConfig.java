@@ -28,8 +28,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/api/books/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/books/**").hasRole("USER")
                         .requestMatchers("/register","/login").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
@@ -37,7 +37,6 @@ public class SecurityConfig {
                 .build();
 
     }
-
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

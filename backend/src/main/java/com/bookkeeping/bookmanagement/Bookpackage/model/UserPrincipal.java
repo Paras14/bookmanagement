@@ -11,13 +11,13 @@ public class UserPrincipal implements UserDetails {
 
     private final Users users;
 
-    public UserPrincipal(Users users){
+    public UserPrincipal(Users users) {
         this.users = users;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton( new SimpleGrantedAuthority(users.getRole()));
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + users.getRole()));
     }
 
     @Override

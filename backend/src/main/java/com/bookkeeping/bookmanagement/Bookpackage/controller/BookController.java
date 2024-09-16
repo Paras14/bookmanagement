@@ -1,80 +1,86 @@
 package com.bookkeeping.bookmanagement.Bookpackage.controller;
 
-import com.bookkeeping.bookmanagement.Bookpackage.model.Book;
-import com.bookkeeping.bookmanagement.Bookpackage.repository.BookRepository;
+import com.bookkeeping.bookmanagement.Bookpackage.dtos.BookDTO;
+import com.bookkeeping.bookmanagement.Bookpackage.dtos.UserBookDTO;
+import com.bookkeeping.bookmanagement.Bookpackage.service.BookService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
+@RequestMapping("/api/books")
 public class BookController {
-    private final BookRepository bookRepository;
+    private final BookService bookService;
 
-    public BookController(BookRepository bookRepository){
-        this.bookRepository = bookRepository;
+    public BookController(BookService bookService){
+        this.bookService = bookService;
     }
 
-    @GetMapping("/books")
-    public ResponseEntity<List<Book>> getAllBooks(){
-        List<Book> books = bookRepository.findAll();
-        if(books.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } return new ResponseEntity<>(books, HttpStatus.OK);
+    @GetMapping("/admin/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<BookDTO>> getAllBooks(){
+        List<BookDTO> allBooks = bookService.getAllBooks();
+        return ResponseEntity.ok(allBooks);
     }
 
-    @GetMapping("books/{isbn}")
-    public ResponseEntity<Book> retrieveBook(@PathVariable String isbn){
-        Optional<Book> book = bookRepository.findById(isbn);
-        return book.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @GetMapping
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<List<UserBookDTO>> getUserBooks(Authentication authentication){
+        String username = authentication.getName();
+        List<UserBookDTO> userBooks = bookService.getUserBooks(username);
+
+        return ResponseEntity.ok(userBooks);
     }
 
-    @DeleteMapping("books/{isbn}")
-    public ResponseEntity<String> deleteBook(@PathVariable String isbn){
-        boolean isExists = bookRepository.existsById(isbn);
-        if(isExists){
-            bookRepository.deleteById(isbn);
-            return new ResponseEntity<>("Book with ISBN " + isbn + " was deleted.", HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>("Book with ISBN " + isbn + " not found.", HttpStatus.NOT_FOUND);
-        }
+    @GetMapping("/{isbn}")
+     public ResponseEntity<UserBookDTO> getUserBookByIsbn(@PathVariable String isbn, Authentication authentication) {
+        String username = authentication.getName();
+        return bookService.getUserBooksByIsbn(isbn, username)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/books")
-    public ResponseEntity<Book> addBook(@Valid @RequestBody Book book) {
-        try {
-            Book createdBook = bookRepository.save(book);
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("/{path}")
-                    .buildAndExpand(createdBook.getIsbn())
-                    .toUri();
-            return ResponseEntity.created(location).body(createdBook);
-        } catch (IllegalStateException e) {
-            //Handle exception in case the book already exists
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-
+    @DeleteMapping("/admin/{isbn}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteBook(@PathVariable String isbn){
+        bookService.deleteBook(isbn);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/books/{isbn}")
-    public ResponseEntity<Book> editBookReadStatus(@PathVariable String isbn, @RequestBody Map<String, Object> updates){
-        Optional<Book> existingBookOptional = bookRepository.findById(isbn);
-        if (existingBookOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        Book existingBook = existingBookOptional.get();
+    @DeleteMapping("/{isbn}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Void> removeBookFromUser(@PathVariable String isbn, Authentication authentication){
+        String username = authentication.getName();
+        bookService.removeBookFromUser(isbn, username);
+        return ResponseEntity.noContent().build();
+    }
 
-        //To only update the read status
-        existingBook.setReadStatus((boolean)updates.get("readStatus"));
-        bookRepository.save(existingBook);
+    @PostMapping
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<UserBookDTO> addBookToUser(@Valid @RequestBody BookDTO bookDTO, Authentication authentication) {
+        String username = authentication.getName();
+        UserBookDTO userBookDTO = bookService.addBookToUser(bookDTO, username);
+//
+//        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+//                .path("/{isbn}")
+//                .buildAndExpand(userBook.getBook().getIsbn())
+//                .toUri();
 
-        return ResponseEntity.ok(existingBook);
+        return ResponseEntity.ok(userBookDTO);
+    }
+
+    @PutMapping("/{isbn}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<UserBookDTO> editBookReadStatus(@PathVariable String isbn,
+                                                          @RequestParam boolean readStatus,
+                                                   Authentication authentication){
+        String username = authentication.getName();
+        return bookService.updateReadStatus(isbn, username, readStatus)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
