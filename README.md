@@ -1,41 +1,86 @@
 # Book Management System
 
-## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Usage](#usage)
-- [API Documentation](#api-documentation)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
-
-
-
-## Overview
-Provide a brief description of your project here. What does it do? Who is it for? Why did you build it?
+This is a fullstack application for managing a personal library of books. Users can add, view, update, and delete books in their collection.
 
 ## Features
-List the features of your book management system. What can users do with it?
 
-## Prerequisites
-List any software or tools that need to be installed before running your project, such as Node.js, Java, or Maven.
+- User authentication and authorization
+- Add new books to the library
+- View all books in the library
+- Mark books as read or unread
+- Delete books from the library
+- Admin functionality to manage all books
 
-## Installation
-Provide step-by-step instructions on how to get your project running locally. This should include how to clone your repository and any necessary installation steps for dependencies.
+## Technologies Used
 
-## Usage
-Explain how to use your book management system. Consider providing examples or use cases.
+### Backend
+- Java
+- Spring Boot
+- Spring Security
+- Spring Data JPA
+- MySQL
 
-## API Documentation
-If your backend includes APIs, document the endpoints, request/response formats, and provide examples of using the API.
+### Frontend
+- React
+- Axios for API calls
+- CSS for styling
 
-## Contributing
-If you are open to contributions, explain how others can contribute. Outline the process for submitting pull requests, and provide contact information for questions.
+## Setup and Installation
+
+### Prerequisites
+- Java JDK 11 or higher
+- Node.js and npm
+- MySQL
+
+### Backend Setup
+
+1. Clone the repository
+2. Navigate to the backend directory
+3. Configure the `application.properties` file with your MySQL credentials
+4. Run the Spring Boot application:
+   ```
+   ./mvnw spring-boot:run
+   ```
+
+### Frontend Setup
+
+1. Navigate to the frontend directory
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Start the React development server:
+   ```
+   npm start
+   ```
+
+## API Endpoints
+
+- `POST /register`: Register a new user
+- `GET /api/books`: Get all books for the authenticated user
+- `POST /api/books`: Add a new book
+- `GET /api/books/{isbn}`: Get a specific book by ISBN
+- `PUT /api/books/{isbn}`: Update a book's read status
+- `DELETE /api/books/{isbn}`: Remove a book from the user's library
+- `GET /api/books/admin/all`: Get all books (admin only)
+- `DELETE /api/books/admin/{isbn}`: Delete a book from the system (admin only)
+
+## Security
+
+The application uses Spring Security for authentication and authorization. It implements stateless authentication using HTTP Basic Auth.
+
+## Frontend Structure
+
+- `App.js`: Main component
+- `Container.jsx`: Manages the book list and form display
+- `BookCard.jsx`: Displays individual book information
+- `BookAddForm.jsx`: Form for adding new books
+- `Header.jsx` and `Footer.jsx`: Layout components
+
+## Contribution
+
+Contributions, issues, and feature requests are welcome. Feel free to check [issues page](https://github.com/yourusername/book-management-system/issues) if you want to contribute.
 
 ## License
-Include information about your project's license.
 
-## Contact
-Provide your contact information or the contact information of the main contributors.
+[MIT](https://choosealicense.com/licenses/mit/)
