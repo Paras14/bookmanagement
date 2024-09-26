@@ -4,24 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6070995-96a0-4a26-8e8c-9cfcb91f6ae6" name="Changes" comment="Add User model with login, register and books-user connection">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/configuration/GlobalExceptionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/configuration/LoggingFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/dtos/BookDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/dtos/UserBookDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/model/UserBook.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/model/UserBookId.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/repository/UserBookRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+    <list default="true" id="d6070995-96a0-4a26-8e8c-9cfcb91f6ae6" name="Changes" comment="Add complete functional routes for users and admin">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/configuration/jwtConfig/JwtAuthenticationFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/configuration/jwtConfig/JwtUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/controller/AuthController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/configuration/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/configuration/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/controller/BookController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/controller/BookController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/model/Book.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/model/Book.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/model/UserPrincipal.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/model/UserPrincipal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/model/Users.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/model/Users.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/service/BookService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/service/BookService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/bookkeeping/bookmanagement/Bookpackage/controller/UserController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -170,6 +160,13 @@
       <workItem from="1726323113530" duration="10028000" />
       <workItem from="1726379929566" duration="2776000" />
       <workItem from="1726444210573" duration="3532000" />
+      <workItem from="1726447764445" duration="214000" />
+      <workItem from="1726493174108" duration="485000" />
+      <workItem from="1726578269562" duration="1810000" />
+      <workItem from="1726988059642" duration="46000" />
+      <workItem from="1727250381041" duration="719000" />
+      <workItem from="1727325289790" duration="888000" />
+      <workItem from="1727364604672" duration="7595000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Commit">
       <option name="closed" value="true" />
@@ -275,7 +272,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725859208120</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Add complete functional routes for users and admin">
+      <option name="closed" value="true" />
+      <created>1726447966421</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1726447966422</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -307,6 +312,7 @@
     <MESSAGE value="Enable CORS mapping for the whole application" />
     <MESSAGE value="Updated CorsMapping policy" />
     <MESSAGE value="Add User model with login, register and books-user connection" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add User model with login, register and books-user connection" />
+    <MESSAGE value="Add complete functional routes for users and admin" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add complete functional routes for users and admin" />
   </component>
 </project>
