@@ -1,7 +1,7 @@
 import React from "react";
 import deleteLogo from '../Assets/delete-logo.png';
 
-function BookCard(props) {
+const BookCard = (props) => {
   return (
     <div className="book-card" data="">
       <h3>{props.title}</h3>

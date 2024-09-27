@@ -31,15 +31,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
+        return http.cors(cors -> cors.configure(http))
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/books/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/books/**").hasRole("USER")
-                        .requestMatchers("/register","/login").permitAll()
+                        .requestMatchers("/api/books/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(AbstractHttpConfigurer::disable)
                 .build();
 
     }

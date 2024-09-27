@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-function BookAddForm({showForm, setShowForm, newBookData, setNewBookData, handleNewBookSubmit}) {
+const BookAddForm = ({showForm, setShowForm, newBookData, setNewBookData, handleNewBookSubmit}) => {
 
     const [invalidBookData, setInvalidBookData] = useState(false);
 

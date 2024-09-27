@@ -28,7 +28,7 @@ public class BookController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<List<UserBookDTO>> getUserBooks(Authentication authentication){
         String username = authentication.getName();
         List<UserBookDTO> userBooks = bookService.getUserBooks(username);
@@ -75,11 +75,12 @@ public class BookController {
 
     @PutMapping("/{isbn}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<UserBookDTO> editBookReadStatus(@PathVariable String isbn,
-                                                          @RequestParam boolean readStatus,
-                                                   Authentication authentication){
+    public ResponseEntity<UserBookDTO> editBookReadStatus(
+            @PathVariable String isbn,
+            @RequestBody UserBookDTO userBookDTO,
+            Authentication authentication) {
         String username = authentication.getName();
-        return bookService.updateReadStatus(isbn, username, readStatus)
+        return bookService.updateReadStatus(isbn, username, userBookDTO.isReadStatus())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

@@ -1,12 +1,15 @@
 package com.bookkeeping.bookmanagement.Bookpackage.service;
 
-import com.bookkeeping.bookmanagement.Bookpackage.model.UserPrincipal;
 import com.bookkeeping.bookmanagement.Bookpackage.model.Users;
 import com.bookkeeping.bookmanagement.Bookpackage.repository.UserRepository;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import org.springframework.security.core.userdetails.User;
+import java.util.Collections;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -19,10 +22,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users users = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return new UserPrincipal(users);
+        return new User(user.getUsername(), user.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole())));
 
     }
 }
