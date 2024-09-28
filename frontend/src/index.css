@@ -154,16 +154,23 @@ html{
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
+.book-options-parent{
+  display: flex;
+  flex-direction: column;
+}
+
 .book-options{
   display: flex;
   flex-direction: row;
   align-items: flex-end;
+  gap: 10px;
 }
 
 .delete-button{
   max-height: 24px;
   flex: 0 1 10px;
   background-color: bisque;
+  cursor: pointer;
 }
 
 .delete-button:hover{
@@ -186,7 +193,8 @@ html{
   align-items: center;
   padding: 1px;
   width: 66px;
-  margin-left: 10px;
+  margin: 0;
+  cursor: pointer;
 }
 
 .read-status:hover{
@@ -255,3 +263,115 @@ html{
 .add-book-form label,input,select,button{
   margin: 5px;
 }
+
+.chat-button {
+  margin: 0;
+  background: linear-gradient(90deg, #00C9FF, #92FE9D, #00C9FF);
+  color: rgb(61, 61, 61);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+  transition: background 0.3s ease, color 0.3s ease;
+  align-self: flex-end;
+  cursor: pointer;
+}
+
+.chat-button:hover{
+  background: linear-gradient(90deg, #6a00ff, #00c9ff, #00d4ff);
+  color: #f0f0f0;
+}
+
+
+.book-chat-window {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 300px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;
+  z-index: 10;
+  padding: 20px;
+  text-align: center;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.close-chat {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+}
+
+.close-chat:hover {
+  color: #ff0000;
+}
+
+.book-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.book-chat form {
+  display: flex;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.book-chat input {
+  flex-grow: 1;
+  padding: 5px;
+  margin-right: 10px;
+}
+
+.book-chat button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.book-chat button:disabled {
+  background-color: #cccccc;
+}
+
+.book-chat .answer {
+  flex-grow: 1;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  overflow-y: auto;
+  max-height: 90%;
+  text-align: left;
+}
+
+.book-chat .answer h4 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.book-chat .answer p {
+  font-size: 12px;
+  margin: 5px 0;
+}
+
+.book-chat .answer ul, .book-chat .answer ol {
+  font-size: 15px;
+  padding-left: 20px;
+  margin: 5px 0;
+}
+
+
