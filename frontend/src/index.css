@@ -132,6 +132,11 @@ html{
   transform: translateY(1px);
 }
 
+.switch-register-login-button{
+  align-self: center;
+  width: 15%;
+}
+
 .books-container{
   min-width: 90%;
   display: flex;
@@ -152,6 +157,11 @@ html{
   font-size: 24px;
   font-family: 'Oswald', sans-serif;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.book-card > h3{
+  inline-size: 100px;
+  overflow-wrap: break-word;
 }
 
 .book-options-parent{
@@ -372,6 +382,10 @@ html{
   font-size: 15px;
   padding-left: 20px;
   margin: 5px 0;
+}
+
+button{
+  cursor: pointer;
 }
 
 

@@ -47,13 +47,13 @@ function App() {
       {isAuthenticated ? (
         isAdmin ? <AdminPanel /> : <Container />
       ) : (
-        <div>
+        <div className='body-section'>
           {showRegister ? (
             <Register onRegisterSuccess={() => setShowRegister(false)} />
           ) : (
             <Login onLoginSuccess={handleLoginSuccess} />
           )}
-          <button onClick={() => setShowRegister(!showRegister)}>
+          <button className='switch-register-login-button' onClick={() => setShowRegister(!showRegister)}>
             {showRegister ? 'Switch to Login' : 'Switch to Register'}
           </button>
         </div>

@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6070995-96a0-4a26-8e8c-9cfcb91f6ae6" name="Changes" comment="Update project version, add AI chat api using Ollama in docker">
+    <list default="true" id="d6070995-96a0-4a26-8e8c-9cfcb91f6ae6" name="Changes" comment="Add AI chat feature to the frontend">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/Components/BookCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/Components/BookCard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -169,7 +165,8 @@
       <workItem from="1727364604672" duration="8277000" />
       <workItem from="1727430752176" duration="8775000" />
       <workItem from="1727503178717" duration="537000" />
-      <workItem from="1727503731935" duration="8392000" />
+      <workItem from="1727503731935" duration="8577000" />
+      <workItem from="1727581879686" duration="816000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Commit">
       <option name="closed" value="true" />
@@ -307,7 +304,23 @@
       <option name="project" value="LOCAL" />
       <updated>1727520513192</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Add previously uncommitted user login, register related frontend files">
+      <option name="closed" value="true" />
+      <created>1727528307398</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1727528307398</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Add AI chat feature to the frontend">
+      <option name="closed" value="true" />
+      <created>1727528345732</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1727528345732</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -343,6 +356,8 @@
     <MESSAGE value="Add authentication through JWT token" />
     <MESSAGE value="Add functional login, register, and Admin Panel" />
     <MESSAGE value="Update project version, add AI chat api using Ollama in docker" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update project version, add AI chat api using Ollama in docker" />
+    <MESSAGE value="Add previously uncommitted user login, register related frontend files" />
+    <MESSAGE value="Add AI chat feature to the frontend" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add AI chat feature to the frontend" />
   </component>
 </project>

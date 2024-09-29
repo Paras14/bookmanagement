@@ -33,7 +33,7 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="admin-panel">
+    <div className="admin-panel body-section">
       <h2>Admin Panel - All Books</h2>
       <table>
         <thead>
