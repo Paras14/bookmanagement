@@ -28,6 +28,7 @@ ShelfSense is a full-stack web application designed for intelligent management o
 ## Screenshots
 #### Login & Register
 <img src="https://github.com/Paras14/bookmanagement/blob/master/Screenshots/Login.png?raw=true" alt="Login Page" width="500"/> <img src="https://github.com/Paras14/bookmanagement/blob/master/Screenshots/Register.png?raw=true" alt="Register Page" width="500"/> 
+
 *Secure login interface for users to access their accounts and User-friendly registration form for new users to create an account.*
 
 #### User Dashboard
@@ -96,6 +97,24 @@ ShelfSense is a full-stack web application designed for intelligent management o
 1. Navigate to the frontend directory
 2. Run `npm install` to install dependencies
 3. Run `npm start` to start the React development server
+
+### Docker Compose (MySQL + Ollama)
+
+Bring up both services with a single command:
+
+```bash
+docker-compose -f backend/docker-compose.yml up -d
+```
+Verify they’re running:
+```bash
+docker-compose -f backend/docker-compose.yml ps
+```
+(One‑time only) Pull the llama3.2 model into Ollama:
+```bash
+docker exec -it ollama ollama pull llama3.2
+```
+
+
 
 ## API Endpoints
 - `/api/auth/register`: User registration

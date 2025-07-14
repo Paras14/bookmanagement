@@ -1,0 +1,26 @@
+  services:
+    mysql:
+      image: mysql:8
+      container_name: shelf-sense-db
+      environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: book-library
+        MYSQL_USER: book-user
+        MYSQL_PASSWORD: book-user-password
+      ports:
+        - "3308:3306"
+      volumes:
+        - mysql-data:/var/lib/mysql
+
+    ollama:
+      image: ollama/ollama:latest
+      container_name: ollama
+      command: serve
+      ports:
+        - "11434:11434"
+      volumes:
+        - ollama-data:/root/.ollama
+
+  volumes:
+    mysql-data:
+    ollama-data:
