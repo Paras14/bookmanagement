@@ -1,6 +1,7 @@
 package com.bookkeeping.bookmanagement.book.service;
 
 import com.bookkeeping.bookmanagement.book.model.Book;
+import com.bookkeeping.bookmanagement.book.model.Role;
 import com.bookkeeping.bookmanagement.book.model.UserBook;
 import com.bookkeeping.bookmanagement.book.model.Users;
 import com.bookkeeping.bookmanagement.book.repository.BookRepository;
@@ -41,13 +42,13 @@ class UserServiceTest {
         user.setId(1L);
         user.setUsername("testUser");
         user.setPassword("password123");
-        user.setRole("USER");
+        user.setRole(Role.valueOf("USER"));
 
         book = new Book();
         book.setIsbn("isbn-12345");
         book.setBookName("BookName");
         book.setAuthorName("Author");
-        book.setGenre(Book.Genre.valueOf("FANTASY"));
+        book.setGenre(Book.Genre.FANTASY);
 
         userBook = new UserBook(user, book, false);
     }
@@ -72,7 +73,7 @@ class UserServiceTest {
         Users newUser = new Users();
         newUser.setUsername("JohnDoe");
         newUser.setPassword("plainPassword123");
-        newUser.setRole("USER");
+        newUser.setRole(Role.valueOf("USER"));
 
         ArgumentCaptor<Users> captor = ArgumentCaptor.forClass(Users.class);
         when(userRepository.save(any(Users.class))).thenAnswer(i -> i.getArgument(0));

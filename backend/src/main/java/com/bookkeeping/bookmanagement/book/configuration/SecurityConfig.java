@@ -17,6 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.bookkeeping.bookmanagement.book.model.Role.ADMIN;
+import static com.bookkeeping.bookmanagement.book.model.Role.USER;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -35,8 +38,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/books/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/books/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/books/admin/**").hasRole(ADMIN.name())
+                        .requestMatchers("/api/books/**").hasAnyRole(USER.name(), ADMIN.name())
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

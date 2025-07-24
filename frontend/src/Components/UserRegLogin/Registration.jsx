@@ -8,7 +8,7 @@ const Register = ({ onRegisterSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8080/api/auth/register', { username, password, "role": "USER", "enable": "true" });
+      await axios.post('http://localhost:8080/api/auth/register', { username, password });
       alert('Registration successful. Please login.');
       onRegisterSuccess();
     } catch (error) {

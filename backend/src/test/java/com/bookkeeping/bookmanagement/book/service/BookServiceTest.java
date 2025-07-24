@@ -48,7 +48,7 @@ class BookServiceTest {
         book.setIsbn("isbn-12345");
         book.setBookName("BookName");
         book.setAuthorName("Author");
-        book.setGenre(Book.Genre.valueOf("FANTASY"));
+        book.setGenre(Book.Genre.FANTASY);
 
         userBook = new UserBook();
         userBook.setId(new UserBookId(user.getId(), book.getIsbn()));

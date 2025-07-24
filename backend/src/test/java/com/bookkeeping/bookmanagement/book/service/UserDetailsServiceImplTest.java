@@ -1,5 +1,6 @@
 package com.bookkeeping.bookmanagement.book.service;
 
+import com.bookkeeping.bookmanagement.book.model.Role;
 import com.bookkeeping.bookmanagement.book.model.Users;
 import com.bookkeeping.bookmanagement.book.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ class UserDetailsServiceImplTest {
         Users user = new Users();
         user.setUsername("testUser");
         user.setPassword("password123");
-        user.setRole("ADMIN");
+        user.setRole(Role.valueOf("ADMIN"));
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
 

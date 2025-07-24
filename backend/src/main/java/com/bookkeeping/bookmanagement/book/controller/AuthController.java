@@ -1,8 +1,11 @@
 package com.bookkeeping.bookmanagement.book.controller;
 
 import com.bookkeeping.bookmanagement.book.configuration.jwtConfig.JwtUtil;
+import com.bookkeeping.bookmanagement.book.dtos.UsersDTO;
+import com.bookkeeping.bookmanagement.book.model.Role;
 import com.bookkeeping.bookmanagement.book.model.Users;
 import com.bookkeeping.bookmanagement.book.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,13 +31,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Users> registerUser(@RequestBody Users user) {
-        Users registeredUser = userService.register(user);
+    public ResponseEntity<Users> registerUser(@RequestBody @Valid UsersDTO user) {
+        Users registeredUser = userService
+                .register(new Users(user.getUsername(), user.getPassword(), Role.USER, true));
         return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody Users user) {
+    public ResponseEntity<?> loginUser(@RequestBody UsersDTO user) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
