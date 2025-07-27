@@ -68,6 +68,7 @@ html{
   color: aliceblue;
   padding: 20px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  text-align: center;
 }
 
 .header-section h2{
@@ -83,6 +84,7 @@ html{
   display: flex;
   gap: 20px;
   flex-direction: column;
+  text-align: center;
 }
 
 .add-books {

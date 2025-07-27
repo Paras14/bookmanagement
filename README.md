@@ -65,7 +65,7 @@ ShelfSense is a full-stack web application designed for intelligent management o
 ## Project Structure
 
 ### Backend (Java)
-- `com.bookkeeping.bookmanagement.Bookpackage`
+- `com.bookkeeping.bookmanagement.book`
   - `configuration`: Contains security and CORS configurations
   - `controller`: REST API endpoints
   - `model`: Entity classes (Book, Users, UserBook)

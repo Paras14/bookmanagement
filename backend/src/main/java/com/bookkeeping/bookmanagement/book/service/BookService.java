@@ -44,6 +44,10 @@ public class BookService {
                     return bookRepository.save(newBook);
                 });
 
+        if (userBookRepository.findByUserIdAndBookIsbn(user.getId(), book.getIsbn()).isPresent()){
+            throw new IllegalStateException("User already owns this book");
+        }
+
         UserBook userBook = new UserBook();
         userBook.setId(new UserBookId(user.getId(), book.getIsbn()));
         userBook.setUser(user);

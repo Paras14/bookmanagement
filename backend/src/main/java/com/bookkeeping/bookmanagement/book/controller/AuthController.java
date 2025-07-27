@@ -57,7 +57,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
-        // For future, ddd token to a blacklist here
+        // For future, add token to a blacklist here
         // For now, we'll just send a successful response
         return ResponseEntity.ok().body("Logged out successfully");
     }

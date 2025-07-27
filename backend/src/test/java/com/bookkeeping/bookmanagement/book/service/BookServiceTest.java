@@ -67,6 +67,8 @@ class BookServiceTest {
     void addBookToUser_existingBook_success() {
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
         when(bookRepository.findById("isbn-12345")).thenReturn(Optional.of(book));
+        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-12345"))
+                .thenReturn(Optional.empty());
         when(userBookRepository.save(any(UserBook.class))).thenReturn(userBook);
 
         UserBookDTO result = bookService.addBookToUser(bookDTO, "john");
@@ -80,6 +82,8 @@ class BookServiceTest {
     void addBookToUser_newBook_success() {
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
         when(bookRepository.findById("isbn-12345")).thenReturn(Optional.empty());
+        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-12345"))
+                .thenReturn(Optional.empty());
         when(bookRepository.save(any(Book.class))).thenReturn(book);
         when(userBookRepository.save(any(UserBook.class))).thenReturn(userBook);
 
@@ -95,6 +99,18 @@ class BookServiceTest {
 
         assertThatThrownBy(() -> bookService.addBookToUser(bookDTO, "john"))
                 .isInstanceOf(UsernameNotFoundException.class);
+    }
+
+    @Test
+    void addBookToUser_duplicate_throws() {
+        when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
+        when(bookRepository.findById("isbn-12345")).thenReturn(Optional.of(book));
+        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-12345"))
+                .thenReturn(Optional.of(userBook));
+
+        assertThatThrownBy(() -> bookService.addBookToUser(bookDTO, "john"))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("User already owns this book");
     }
 
     @Test
