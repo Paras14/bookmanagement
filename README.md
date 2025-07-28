@@ -41,11 +41,6 @@ ShelfSense is a full-stack web application for organizing and tracking your pers
 ![Book Form Image](https://github.com/Paras14/bookmanagement/blob/master/Screenshots/addNewBook.png?raw=true)
 *Modal Form for adding a new book to the user's collection, showcasing all input fields.*
 
-#### Book Card
-
-![Book Card Image](https://github.com/Paras14/bookmanagement/blob/master/Screenshots/ReadStatusButton.png?raw=true)
-*Book Card with options to delete, edit Read Status, and AI Chat.*
-
 #### AI Chat Interface
 
 ![AI Chat Interface Image](https://github.com/Paras14/bookmanagement/blob/master/Screenshots/AIChatWindow.png?raw=true)
@@ -58,7 +53,7 @@ ShelfSense is a full-stack web application for organizing and tracking your pers
 
 #### Docker Containers
 
-![Docker containers Image](https://github.com/Paras14/bookmanagement/blob/master/Screenshots/Docker%20Containers.png?raw=true)
+![Docker containers Image](https://github.com/Paras14/bookmanagement/blob/master/Screenshots/DockerContainers.png?raw=true)
 *Docker containers running MySQL database and Ollama with llama3.2 3B locally.*
 
 ## Project Structure
