@@ -2,9 +2,12 @@ package com.bookkeeping.bookmanagement.book.service;
 
 import com.bookkeeping.bookmanagement.book.dtos.UserBookDTO;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnProperty(prefix = "spring.ai", name = "enabled", havingValue = "true")
 public class AIChatService {
 
     private final ChatClient chatClient;

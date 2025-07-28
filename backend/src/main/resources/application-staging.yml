@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: staging
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:?You must set SPRING_DATASOURCE_URL for staging}
+    username: ${SPRING_DATASOURCE_USERNAME:? You must set SPRING_DATASOURCE_USERNAME for staging}
+    password: ${SPRING_DATASOURCE_PASSWORD:? You must set SPRING_DATASOURCE_PASSWORD for staging}
+
+jwt:
+  secret: ${JWT_SECRET:?You must set JWT_SECRET for staging}
+  expiration: ${JWT_EXPIRATION:7200000}  # e.g. 2h

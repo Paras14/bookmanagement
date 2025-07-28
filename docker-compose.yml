@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: book_library
+      MYSQL_USER: ${SPRING_DATASOURCE_USERNAME:-book-user}
+      MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-book-user-password}
+    ports:
+      - "3308:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - ollama
+    ports:
+      - "8080:8080"
+    environment:
+      # pick your profile here (dev / staging / prod)
+      SPRING_PROFILES_ACTIVE: ${PROFILE:-dev}
+
+      # datasource (point at our "db" service)
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/book_library
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-book-user}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-book-user-password}
+
+      # your JWT & AI vars
+      JWT_SECRET:     ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      SPRING_AI_OLLAMA_BASE_URL:   ${SPRING_AI_OLLAMA_BASE_URL}
+      SPRING_AI_OLLAMA_CHAT_MODEL: ${SPRING_AI_OLLAMA_CHAT_MODEL}
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      # let your React app know where the API lives
+      REACT_APP_API_URL: http://localhost:8080
+
+volumes:
+  db_data:

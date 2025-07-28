@@ -1,0 +1,21 @@
+# ─── Build stage ─────────────────────────────────────────────────────────────
+FROM eclipse-temurin:21-jdk-jammy AS builder
+WORKDIR /app
+
+# copy Maven wrapper & download dependencies offline
+COPY mvnw .mvn/ pom.xml ./
+RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
+
+# copy source & build
+COPY src ./src
+RUN ./mvnw clean package -DskipTests -B
+
+# ─── Runtime stage ───────────────────────────────────────────────────────────
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+
+# grab the fat jar from builder
+COPY --from=builder /app/target/*.jar app.jar
+
+# default profile=dev; override with SPRING_PROFILES_ACTIVE env
+ENTRYPOINT ["sh","-c","java -jar /app/app.jar"]
