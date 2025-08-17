@@ -1,0 +1,23 @@
+# ---- Build stage ----
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# install dependencies
+COPY package*.json ./
+RUN npm install
+
+# copy source
+COPY . .
+
+# build the app
+RUN npm run build
+
+# ---- Runtime stage ----
+FROM node:20-alpine AS runtime
+WORKDIR /app
+
+COPY --from=builder /app .
+
+EXPOSE 3000
+
+CMD ["npm","start"]

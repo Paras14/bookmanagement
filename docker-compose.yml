@@ -2,40 +2,48 @@ version: '3.8'
 
 services:
   ollama:
-    image: ollama/ollama:latest
+    image: alpine/llama3.2:latest
     ports:
       - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
 
   db:
     image: mysql:8.0
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: book_library
-      MYSQL_USER: ${SPRING_DATASOURCE_USERNAME:-book-user}
-      MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-book-user-password}
+      MYSQL_USER: ${SPRING_DATASOURCE_USERNAME}
+      MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
     ports:
       - "3308:3306"
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 30s
 
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: DockerFile
     depends_on:
-      - db
-      - ollama
+      db:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
       # pick your profile here (dev / staging / prod)
-      SPRING_PROFILES_ACTIVE: ${PROFILE:-dev}
+      SPRING_PROFILES_ACTIVE: ${PROFILE}
 
       # datasource (point at our "db" service)
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/book_library
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-book-user}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-book-user-password}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
 
       # your JWT & AI vars
       JWT_SECRET:     ${JWT_SECRET}
@@ -46,12 +54,13 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: DockerFile
     ports:
-      - "3000:80"
+      - "3000:3000"
     environment:
       # let your React app know where the API lives
       REACT_APP_API_URL: http://localhost:8080
 
 volumes:
   db_data:
+  ollama-data:
