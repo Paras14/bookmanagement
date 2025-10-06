@@ -19,6 +19,7 @@ jobs:
           java-version: '21'
 
       - name: Build & Test
+        working-directory: ./backend
         run: ./mvnw clean verify -B
 
       - name: Build & Push Images
