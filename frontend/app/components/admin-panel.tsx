@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -18,24 +18,24 @@ export default function AdminPanel() {
   const [books, setBooks] = useState<Book[]>([])
   const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
 
-  useEffect(() => {
-    fetchAllBooks()
-  }, [])
-
-  const fetchAllBooks = async () => {
+  const fetchAllBooks = useCallback(async () => {
     try {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
       const res = await fetch(`${apiBase}/api/books/admin/all`, {
         headers: { Authorization: `Bearer ${token}` },
-      })
-      if (!res.ok) throw new Error("Failed to fetch books")
-      const data: Book[] = await res.json()
-      setBooks(data)
-    } catch (error: any) {
-      console.error("Error fetching all books:", error)
-      alert(error.message || "Error loading books.")
+      });
+      if (!res.ok) throw new Error("Failed to fetch books");
+      const data: Book[] = await res.json();
+      setBooks(data);
+    } catch (error) {
+      console.error("Error fetching all books:", error);
+      alert(error instanceof Error ? error.message : "Error loading books.");
     }
-  }
+  }, [apiBase]);
+
+useEffect(() => {
+    fetchAllBooks();
+  }, [fetchAllBooks]);
 
   const deleteBook = async (isbn: string) => {
     try {

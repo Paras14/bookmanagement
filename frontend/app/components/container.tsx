@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import BookCard from "./book-card"
 import BookAddForm from "./book-add-form"
 import { Button } from "@/components/ui/button"
@@ -27,24 +27,24 @@ export default function Container() {
 
   const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
 
-  useEffect(() => {
-    fetchBooks()
-  }, [])
-
-  const fetchBooks = async () => {
+  const fetchBooks = useCallback(async () => {
     try {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
       const res = await fetch(`${apiBase}/api/books`, {
         headers: { Authorization: `Bearer ${token}` },
-      })
-      if (!res.ok) throw new Error("Failed to fetch books")
-      const data: Book[] = await res.json()
-      setBooks(data)
-    } catch (error: any) {
-      console.error("Error fetching books:", error)
-      alert(error.message || "Error loading books.")
+      });
+      if (!res.ok) throw new Error("Failed to fetch books");
+      const data: Book[] = await res.json();
+      setBooks(data);
+    } catch (error) {
+      console.error("Error fetching books:", error);
+      alert(error instanceof Error ? error.message : "Error loading books.");
     }
-  }
+  }, [apiBase]);
+
+  useEffect(() => {
+    fetchBooks()
+  }, [fetchBooks])
 
   const addBookFormHandler = () => setShowForm(true)
 
