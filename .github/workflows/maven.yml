@@ -39,10 +39,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & Test
+      - name: Backend Build & Test
         run: mvn -B -f backend/pom.xml clean verify
 
-      - name: Frontend — Build check
+      - name: Frontend Build check
         working-directory: ./frontend
         run: |
           npm ci
