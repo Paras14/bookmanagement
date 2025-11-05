@@ -13,19 +13,11 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:book-user-password}
 
   ai:
-    enabled: true
     ollama:
       base-url: ${SPRING_AI_OLLAMA_BASE_URL:http://localhost:11434}
       chat:
         model: ${SPRING_AI_OLLAMA_CHAT_MODEL:llama3.2}
 
-logging:
-  level:
-    root: INFO
-    com.bookkeeping.bookmanagement: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.web: DEBUG
-
 jwt:
-  secret: ${JWT_SECRET:}
-  expiration: ${JWT_EXPIRATION:3600000}
+  secret: ${JWT_SECRET:?}
+  expiration: ${JWT_EXPIRATION:?3600000}

@@ -2,3 +2,16 @@ spring:
   config:
     activate:
       on-profile: dev
+
+  ai:
+    model:
+      chat: ollama
+    openai:
+      api-key: dummy-dev-key
+
+logging:
+  level:
+    root: INFO
+    com.bookkeeping.bookmanagement: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
