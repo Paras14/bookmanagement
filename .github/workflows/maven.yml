@@ -75,7 +75,7 @@ jobs:
             --region "$GCP_REGION" --platform managed --allow-unauthenticated \
             --service-account "$RUNTIME_SA" \
             --add-cloudsql-instances "$INSTANCE_CONNECTION_NAME" \
-            --set-env-vars "SPRING_PROFILES_ACTIVE=prod,SPRING_DATASOURCE_URL=${SPRING_DS_URL},JWT_EXPIRATION=${{ vars.JWT_EXPIRATION || '3600000' }},CHAT_MODEL=${{ vars.CHAT_MODEL || 'nvidia/nemotron-nano-9b-v2:free'" \
+            --set-env-vars "SPRING_PROFILES_ACTIVE=prod,SPRING_DATASOURCE_URL=${SPRING_DS_URL},JWT_EXPIRATION=${{ vars.JWT_EXPIRATION || '3600000' }},CHAT_MODEL=${{ vars.CHAT_MODEL || 'nvidia/nemotron-nano-9b-v2:free'}}" \
             --update-secrets "SPRING_DATASOURCE_USERNAME=db_user:latest,SPRING_DATASOURCE_PASSWORD=db_password:latest" \
             --update-secrets "JWT_SECRET=JWT_SECRET:latest,CHAT_API_KEY=CHAT_API_KEY:latest"
 
