@@ -2,22 +2,21 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# install dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
-# copy source
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
 COPY . .
-
-# build the app
 RUN npm run build
 
 # ---- Runtime stage ----
 FROM node:20-alpine AS runtime
 WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=8080
+EXPOSE 8080
 
-COPY --from=builder /app .
-
-EXPOSE 3000
-
-CMD ["npm","start"]
+COPY --from=builder /app ./
+CMD ["npm","start","--","-p","8080"]
