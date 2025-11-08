@@ -25,7 +25,7 @@ export default function Register({ onRegisterSuccess }: RegisterProps) {
       if (!apiUrl) {
           throw new Error("API URL is not defined");
         }
-      const response = await fetch(apiUrl, {
+      const response = await fetch(`${apiUrl}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
