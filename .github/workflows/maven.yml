@@ -2,7 +2,6 @@ name: CI/CD — Build, Deploy Backend & Frontend (Cloud Run)
 
 permissions:
   contents: read
-  packages: write
   id-token: write
 
 on:
@@ -44,13 +43,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Google Cloud Auth
         uses: google-github-actions/auth@v2
         with:
@@ -71,9 +63,6 @@ jobs:
           push: true
           tags: |
             ${{ env.GAR_HOST }}/${{ env.GCP_PROJECT }}/${{ env.GAR_REPO }}/backend:${{ github.sha }}
-            ghcr.io/${{ github.repository_owner }}/bookmgmt-backend:${{ github.sha }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/bookmgmt-backend:buildcache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/bookmgmt-backend:buildcache,mode=max
 
       - name: Deploy Backend to Cloud Run
         run: |
@@ -103,11 +92,8 @@ jobs:
           push: true
           tags: |
             ${{ env.GAR_HOST }}/${{ env.GCP_PROJECT }}/${{ env.GAR_REPO }}/frontend:${{ github.sha }}
-            ghcr.io/${{ github.repository_owner }}/bookmgmt-frontend:${{ github.sha }}
           build-args: |
             NEXT_PUBLIC_API_URL=${{ env.BACKEND_URL }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/bookmgmt-frontend:buildcache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/bookmgmt-frontend:buildcache,mode=max
 
       - name: Deploy Frontend to Cloud Run
         run: |
