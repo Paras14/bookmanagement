@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { UserPlus, User, Lock } from "lucide-react"
+import { apiUrl } from "@/constants"
 
 interface RegisterProps {
   onRegisterSuccess: () => void
@@ -20,11 +21,10 @@ export default function Register({ onRegisterSuccess }: RegisterProps) {
     e.preventDefault()
     setIsLoading(true)
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL
-      ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`
-      : "http://localhost:8080/api/auth/register"
-
     try {
+      if (!apiUrl) {
+          throw new Error("API URL is not defined");
+        }
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {

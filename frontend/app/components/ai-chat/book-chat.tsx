@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Send, Loader2 } from "lucide-react"
+import { apiUrl } from "@/constants"
 
 interface BookChatProps {
   isbn: string
@@ -16,8 +17,6 @@ export default function BookChat({ isbn, bookName }: BookChatProps) {
   const [answer, setAnswer] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -25,7 +24,7 @@ export default function BookChat({ isbn, bookName }: BookChatProps) {
     try {
       const token = localStorage.getItem("token")
       const res = await fetch(
-        `${apiBase}/api/books/chat/${isbn}`,
+        `${apiUrl}/api/books/chat/${isbn}`,
         {
           method: "POST",
           headers: {

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Trash2, Shield } from "lucide-react"
+import { apiUrl } from "@/constants"
 
 interface Book {
   isbn: string
@@ -16,12 +17,11 @@ interface Book {
 
 export default function AdminPanel() {
   const [books, setBooks] = useState<Book[]>([])
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
 
   const fetchAllBooks = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${apiBase}/api/books/admin/all`, {
+      const res = await fetch(`${apiUrl}/api/books/admin/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch books");
@@ -31,7 +31,7 @@ export default function AdminPanel() {
       console.error("Error fetching all books:", error);
       alert(error instanceof Error ? error.message : "Error loading books.");
     }
-  }, [apiBase]);
+  }, [apiUrl]);
 
 useEffect(() => {
     fetchAllBooks();
@@ -40,7 +40,7 @@ useEffect(() => {
   const deleteBook = async (isbn: string) => {
     try {
       const token = localStorage.getItem("token")
-      const res = await fetch(`${apiBase}/api/books/admin/${isbn}`, {
+      const res = await fetch(`${apiUrl}/api/books/admin/${isbn}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       })

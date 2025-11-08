@@ -5,6 +5,7 @@ import BookCard from "./book-card"
 import BookAddForm from "./book-add-form"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
+import { apiUrl } from "@/constants"
 
 interface Book {
   isbn: string
@@ -25,12 +26,10 @@ export default function Container() {
     readStatus: false,
   })
 
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
-
   const fetchBooks = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${apiBase}/api/books`, {
+      const res = await fetch(`${apiUrl}/api/books`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch books");
@@ -40,7 +39,7 @@ export default function Container() {
       console.error("Error fetching books:", error);
       alert(error instanceof Error ? error.message : "Error loading books.");
     }
-  }, [apiBase]);
+  }, [apiUrl]);
 
   useEffect(() => {
     fetchBooks()
@@ -54,7 +53,7 @@ export default function Container() {
       const book = books.find((b) => b.isbn === isbn)
       if (!book) return
       const updated = { readStatus: !book.readStatus }
-      const res = await fetch(`${apiBase}/api/books/${isbn}`, {
+      const res = await fetch(`${apiUrl}/api/books/${isbn}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -73,7 +72,7 @@ export default function Container() {
   const deleteBookFromLibrary = async (isbn: string) => {
     try {
       const token = localStorage.getItem("token")
-      const res = await fetch(`${apiBase}/api/books/${isbn}`, {
+      const res = await fetch(`${apiUrl}/api/books/${isbn}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -89,7 +88,7 @@ export default function Container() {
     e.preventDefault()
     try {
       const token = localStorage.getItem("token")
-      const res = await fetch(`${apiBase}/api/books`, {
+      const res = await fetch(`${apiUrl}/api/books`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
