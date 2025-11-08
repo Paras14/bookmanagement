@@ -71,13 +71,13 @@ jobs:
           SPRING_DS_URL="jdbc:mysql:///${DB_NAME}?cloudSqlInstance=${INSTANCE_CONNECTION_NAME}&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useSSL=false"
 
           gcloud run deploy "$BACKEND_SERVICE" \
-            --image "$IMAGE" \
-            --region "$GCP_REGION" --platform managed --allow-unauthenticated \
-            --service-account "$RUNTIME_SA" \
-            --add-cloudsql-instances "$INSTANCE_CONNECTION_NAME" \
-            --set-env-vars "SPRING_PROFILES_ACTIVE=prod,SPRING_DATASOURCE_URL=${SPRING_DS_URL},JWT_EXPIRATION=${{ vars.JWT_EXPIRATION || '3600000' }},CHAT_MODEL=${{ vars.CHAT_MODEL || 'nvidia/nemotron-nano-9b-v2:free' }}" \
-            --set-secrets "SPRING_DATASOURCE_USERNAME=projects/${GCP_PROJECT}/secrets/db_user:latest,SPRING_DATASOURCE_PASSWORD=projects/${GCP_PROJECT}/secrets/db_password:latest" \
-            --set-secrets "JWT_SECRET=projects/${GCP_PROJECT}/secrets/JWT_SECRET:latest,CHAT_API_KEY=projects/${GCP_PROJECT}/secrets/CHAT_API_KEY:latest"
+              --image "$IMAGE" \
+              --region "$GCP_REGION" --platform managed --allow-unauthenticated \
+              --service-account "$RUNTIME_SA" \
+              --add-cloudsql-instances "$INSTANCE_CONNECTION_NAME" \
+              --set-env-vars "SPRING_PROFILES_ACTIVE=prod,SPRING_DATASOURCE_URL=${SPRING_DS_URL}" \
+              --update-secrets "SPRING_DATASOURCE_USERNAME=db_user:latest,SPRING_DATASOURCE_PASSWORD=db_password:latest" \
+              --update-secrets "JWT_SECRET=JWT_SECRET:latest,CHAT_API_KEY=CHAT_API_KEY:latest"
 
           # Capture backend URL for the frontend build
           BACKEND_URL=$(gcloud run services describe "$BACKEND_SERVICE" --region "$GCP_REGION" --format 'value(status.url)')
