@@ -1,18 +1,30 @@
-name: CI — Build & Push Backend & Frontend
+name: CI/CD — Build, Deploy Backend & Frontend (Cloud Run)
 
 permissions:
   contents: read
   packages: write
+  id-token: write
 
 on:
   push:
     branches: [ master ]
-
   workflow_dispatch:
 
+env:
+  GCP_PROJECT: ${{ vars.GCP_PROJECT }}
+  GCP_REGION:  ${{ vars.GCP_REGION }}
+  GAR_HOST:    ${{ vars.GAR_HOST }}
+  GAR_REPO:    ${{ vars.GAR_REPO }}
+  BACKEND_SERVICE:  ${{ vars.BACKEND_SERVICE }}
+  FRONTEND_SERVICE: ${{ vars.FRONTEND_SERVICE }}
+  RUNTIME_SA:  ${{ vars.RUNTIME_SA }}
+  INSTANCE_CONNECTION_NAME: ${{ vars.INSTANCE_CONNECTION_NAME }}
+  DB_NAME: ${{ vars.DB_NAME }}
+
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -39,20 +51,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Backend Build & Test
-        run: mvn -B -f backend/pom.xml clean verify
+      - name: Google Cloud Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ env.GCP_PROJECT }}
 
-      - name: Frontend Build check
-        working-directory: ./frontend
-        run: |
-          npm ci
-          npm run lint --if-present
-          npm run build
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
 
-      - name: Lowercase owner
-        run: echo "OWNER_LC=${OWNER,,}" >> "$GITHUB_ENV"
-        env:
-          OWNER: ${{ github.repository_owner }}
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker $GAR_HOST
 
       - name: Build & Push Backend Image
         uses: docker/build-push-action@v5
@@ -60,9 +69,31 @@ jobs:
           context: ./backend
           file: ./backend/DockerFile
           push: true
-          tags: ghcr.io/${{ env.OWNER_LC }}/bookmgmt-backend:${{ github.sha }}
-          cache-from: type=registry,ref=ghcr.io/${{ env.OWNER_LC }}/bookmgmt-backend:buildcache
-          cache-to: type=registry,ref=ghcr.io/${{ env.OWNER_LC }}/bookmgmt-backend:buildcache,mode=max
+          tags: |
+            ${{ env.GAR_HOST }}/${{ env.GCP_PROJECT }}/${{ env.GAR_REPO }}/backend:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/bookmgmt-backend:${{ github.sha }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/bookmgmt-backend:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/bookmgmt-backend:buildcache,mode=max
+
+      - name: Deploy Backend to Cloud Run
+        run: |
+          IMAGE="${GAR_HOST}/${GCP_PROJECT}/${GAR_REPO}/backend:${GITHUB_SHA}"
+
+          SPRING_DS_URL="jdbc:mysql:///${DB_NAME}?cloudSqlInstance=${INSTANCE_CONNECTION_NAME}&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useSSL=false"
+
+          gcloud run deploy "$BACKEND_SERVICE" \
+            --image "$IMAGE" \
+            --region "$GCP_REGION" --platform managed --allow-unauthenticated \
+            --service-account "$RUNTIME_SA" \
+            --add-cloudsql-instances "$INSTANCE_CONNECTION_NAME" \
+            --set-env-vars "SPRING_DATASOURCE_URL=${SPRING_DS_URL}" \
+            --set-env-vars "SPRING_PROFILES_ACTIVE=prod,SPRING_DATASOURCE_URL=${SPRING_DS_URL},JWT_EXPIRATION=${{ vars.JWT_EXPIRATION || '3600000' }},CHAT_MODEL=${{ vars.CHAT_MODEL || 'nvidia/nemotron-nano-9b-v2:free' }}" \
+            --set-secrets "SPRING_DATASOURCE_USERNAME=projects/${GCP_PROJECT}/secrets/db_user:latest,SPRING_DATASOURCE_PASSWORD=projects/${GCP_PROJECT}/secrets/db_password:latest" \
+            --set-secrets "JWT_SECRET=projects/${GCP_PROJECT}/secrets/JWT_SECRET:latest,CHAT_API_KEY=projects/${GCP_PROJECT}/secrets/CHAT_API_KEY:latest"
+
+          # Capture backend URL for the frontend build
+          BACKEND_URL=$(gcloud run services describe "$BACKEND_SERVICE" --region "$GCP_REGION" --format 'value(status.url)')
+          echo "BACKEND_URL=${BACKEND_URL}" >> "$GITHUB_ENV"
 
       - name: Build & Push Frontend Image
         uses: docker/build-push-action@v5
@@ -70,7 +101,32 @@ jobs:
           context: ./frontend
           file: ./frontend/DockerFile
           push: true
-          tags: ghcr.io/${{ env.OWNER_LC }}/bookmgmt-frontend:${{ github.sha }}
-          cache-from: type=registry,ref=ghcr.io/${{ env.OWNER_LC }}/bookmgmt-frontend:buildcache
-          cache-to: type=registry,ref=ghcr.io/${{ env.OWNER_LC }}/bookmgmt-frontend:buildcache,mode=max
+          tags: |
+            ${{ env.GAR_HOST }}/${{ env.GCP_PROJECT }}/${{ env.GAR_REPO }}/frontend:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/bookmgmt-frontend:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ env.BACKEND_URL }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/bookmgmt-frontend:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/bookmgmt-frontend:buildcache,mode=max
 
+      - name: Deploy Frontend to Cloud Run
+        run: |
+          IMAGE="${GAR_HOST}/${GCP_PROJECT}/${GAR_REPO}/frontend:${GITHUB_SHA}"
+
+          # Deploy; also set the env for runtime
+          gcloud run deploy "$FRONTEND_SERVICE" \
+            --image "$IMAGE" \
+            --region "$GCP_REGION" --platform managed --allow-unauthenticated \
+            --service-account "$RUNTIME_SA" \
+            --set-env-vars "NEXT_PUBLIC_API_URL=${BACKEND_URL}"
+
+          # Capture frontend URL for CORS on backend
+          FRONTEND_URL=$(gcloud run services describe "$FRONTEND_SERVICE" --region "$GCP_REGION" --format 'value(status.url)')
+          echo "FRONTEND_URL=${FRONTEND_URL}" >> "$GITHUB_ENV"
+
+      # Patch backend with FRONTEND_URL (for CORS)
+      - name: Update Backend FRONTEND_URL
+        run: |
+          gcloud run services update "$BACKEND_SERVICE" \
+            --region "$GCP_REGION" \
+            --update-env-vars "FRONTEND_URL=${FRONTEND_URL}"
