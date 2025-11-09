@@ -45,7 +45,7 @@ class UserServiceTest {
         user.setRole(Role.valueOf("USER"));
 
         book = new Book();
-        book.setIsbn("isbn-12345");
+        book.setId(12345L);
         book.setBookName("BookName");
         book.setAuthorName("Author");
         book.setGenre(Book.Genre.FANTASY);
@@ -95,30 +95,30 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserBookByIsbn_found() {
+    void getUserBookById_found() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(user.getId(), "isbn-12345"))
+        when(userBookRepository.findByUserIdAndBookId(user.getId(), book.getId()))
                 .thenReturn(Optional.of(userBook));
 
-        Optional<UserBook> result = userService.getUserBookByIsbn("isbn-12345", "testUser");
+        Optional<UserBook> result = userService.getUserBookById(book.getId(), "testUser");
         assertThat(result).isPresent().get().isEqualTo(userBook);
     }
 
     @Test
-    void getUserBookByIsbn_notFound() {
+    void getUserBookById_notFound() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(user.getId(), "isbn-12345"))
+        when(userBookRepository.findByUserIdAndBookId(user.getId(), book.getId()))
                 .thenReturn(Optional.empty());
 
-        Optional<UserBook> result = userService.getUserBookByIsbn("isbn-12345", "testUser");
+        Optional<UserBook> result = userService.getUserBookById(book.getId(), "testUser");
         assertThat(result).isEmpty();
     }
 
     @Test
     void addBookToUser_existingBook_newOwnership() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(bookRepository.findById(book.getIsbn())).thenReturn(Optional.of(book));
-        when(userBookRepository.findByUserIdAndBookIsbn(user.getId(), book.getIsbn()))
+        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
+        when(userBookRepository.findByUserIdAndBookId(user.getId(), book.getId()))
                 .thenReturn(Optional.empty());
         when(userBookRepository.save(any(UserBook.class))).thenReturn(userBook);
 
@@ -128,23 +128,27 @@ class UserServiceTest {
 
     @Test
     void addBookToUser_newBook() {
+        Book newBook = new Book();
+        newBook.setBookName("New Book");
+        newBook.setAuthorName("New Author");
+        newBook.setGenre(Book.Genre.COMEDY);
+
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(bookRepository.findById(book.getIsbn())).thenReturn(Optional.empty());
-        when(bookRepository.save(book)).thenReturn(book);
-        when(userBookRepository.findByUserIdAndBookIsbn(user.getId(), book.getIsbn()))
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
+        when(userBookRepository.findByUserIdAndBookId(user.getId(), book.getId()))
                 .thenReturn(Optional.empty());
         when(userBookRepository.save(any(UserBook.class))).thenReturn(userBook);
 
-        UserBook result = userService.addBookToUser(book, "testUser");
+        UserBook result = userService.addBookToUser(newBook, "testUser");
         assertThat(result).isEqualTo(userBook);
-        verify(bookRepository).save(book);
+        verify(bookRepository).save(any(Book.class));
     }
 
     @Test
     void addBookToUser_alreadyOwned_throws() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(bookRepository.findById(book.getIsbn())).thenReturn(Optional.of(book));
-        when(userBookRepository.findByUserIdAndBookIsbn(user.getId(), book.getIsbn()))
+        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
+        when(userBookRepository.findByUserIdAndBookId(user.getId(), book.getId()))
                 .thenReturn(Optional.of(userBook));
 
         assertThatThrownBy(() -> userService.addBookToUser(book, "testUser"))
@@ -155,11 +159,11 @@ class UserServiceTest {
     @Test
     void updateReadStatus_existingUserBook_success() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(user.getId(), book.getIsbn()))
+        when(userBookRepository.findByUserIdAndBookId(user.getId(), book.getId()))
                 .thenReturn(Optional.of(userBook));
         when(userBookRepository.save(any(UserBook.class))).thenAnswer(i -> i.getArgument(0));
 
-        UserBook result = userService.updateReadStatus(book.getIsbn(), "testUser", true);
+        UserBook result = userService.updateReadStatus(book.getId(), "testUser", true);
 
         assertThat(result.isReadStatus()).isTrue();
         verify(userBookRepository).save(userBook);
@@ -168,29 +172,29 @@ class UserServiceTest {
     @Test
     void updateReadStatus_notOwned_throws() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(user.getId(), book.getIsbn()))
+        when(userBookRepository.findByUserIdAndBookId(user.getId(), book.getId()))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.updateReadStatus(book.getIsbn(), "testUser", true))
+        assertThatThrownBy(() -> userService.updateReadStatus(book.getId(), "testUser", true))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("User does not own this book");
     }
 
     @Test
     void deleteBook_bookExists_deletesAll() {
-        when(bookRepository.existsById(book.getIsbn())).thenReturn(true);
+        when(bookRepository.existsById(book.getId())).thenReturn(true);
 
-        userService.deleteBook(book.getIsbn());
+        userService.deleteBook(book.getId());
 
-        verify(userBookRepository).deleteByBookIsbn(book.getIsbn());
-        verify(bookRepository).deleteById(book.getIsbn());
+        verify(userBookRepository).deleteByBookId(book.getId());
+        verify(bookRepository).deleteById(book.getId());
     }
 
     @Test
     void deleteBook_bookNotFound_throws() {
-        when(bookRepository.existsById(book.getIsbn())).thenReturn(false);
+        when(bookRepository.existsById(book.getId())).thenReturn(false);
 
-        assertThatThrownBy(() -> userService.deleteBook(book.getIsbn()))
+        assertThatThrownBy(() -> userService.deleteBook(book.getId()))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Book not found");
     }
@@ -198,36 +202,36 @@ class UserServiceTest {
     @Test
     void removeBookFromUser_ownedByUserAndNoOtherUsers_deletesBook() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(user.getId(), book.getIsbn()))
+        when(userBookRepository.findByUserIdAndBookId(user.getId(), book.getId()))
                 .thenReturn(Optional.of(userBook));
-        when(userBookRepository.existsByBookIsbn(book.getIsbn())).thenReturn(false);
+        when(userBookRepository.existsByBookId(book.getId())).thenReturn(false);
 
-        userService.removeBookFromUser(book.getIsbn(), "testUser");
+        userService.removeBookFromUser(book.getId(), "testUser");
 
         verify(userBookRepository).delete(userBook);
-        verify(bookRepository).deleteById(book.getIsbn());
+        verify(bookRepository).deleteById(book.getId());
     }
 
     @Test
     void removeBookFromUser_ownedByUserAndOtherUsers_doesNotDeleteBook() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(user.getId(), book.getIsbn()))
+        when(userBookRepository.findByUserIdAndBookId(user.getId(), book.getId()))
                 .thenReturn(Optional.of(userBook));
-        when(userBookRepository.existsByBookIsbn(book.getIsbn())).thenReturn(true);
+        when(userBookRepository.existsByBookId(book.getId())).thenReturn(true);
 
-        userService.removeBookFromUser(book.getIsbn(), "testUser");
+        userService.removeBookFromUser(book.getId(), "testUser");
 
         verify(userBookRepository).delete(userBook);
-        verify(bookRepository, never()).deleteById(any());
+        verify(bookRepository, never()).deleteById(anyLong());
     }
 
     @Test
     void removeBookFromUser_notOwned_throws() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(user.getId(), book.getIsbn()))
+        when(userBookRepository.findByUserIdAndBookId(user.getId(), book.getId()))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.removeBookFromUser(book.getIsbn(), "testUser"))
+        assertThatThrownBy(() -> userService.removeBookFromUser(book.getId(), "testUser"))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("User does not own this book");
     }

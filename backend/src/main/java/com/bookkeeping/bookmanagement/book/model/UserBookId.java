@@ -9,14 +9,14 @@ import java.util.Objects;
 public class UserBookId implements Serializable {
 
     private Long userId;
-    private String bookIsbn;
+    private Long bookId;
 
     public UserBookId() {
     }
 
-    public UserBookId(Long userId, String bookIsbn){
+    public UserBookId(Long userId, Long bookId){
         this.userId = userId;
-        this.bookIsbn = bookIsbn;
+        this.bookId = bookId;
     }
 
     public Long getUserId() {
@@ -27,12 +27,12 @@ public class UserBookId implements Serializable {
         this.userId = userId;
     }
 
-    public String getBookIsbn() {
-        return bookIsbn;
+    public Long getBookId() {
+        return bookId;
     }
 
-    public void setBookIsbn(String bookIsbn) {
-        this.bookIsbn = bookIsbn;
+    public void setBookId(Long bookId) {
+        this.bookId = bookId;
     }
 
     @Override
@@ -40,11 +40,11 @@ public class UserBookId implements Serializable {
         if(this == o) return true;
         if(!(o instanceof UserBookId)) return false;
         UserBookId that = (UserBookId)  o;
-        return Objects.equals(getUserId(), that.getUserId()) && Objects.equals(getBookIsbn(), that.getBookIsbn());
+        return Objects.equals(getUserId(), that.getUserId()) && Objects.equals(getBookId(), that.getBookId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getBookIsbn());
+        return Objects.hash(getUserId(), getBookId());
     }
 }

@@ -14,17 +14,18 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { X } from "lucide-react"
 
+interface BookFormData {
+  bookName: string
+  authorName: string
+  genre: string
+  readStatus: boolean
+}
+
 interface BookAddFormProps {
   showForm: boolean
   setShowForm: (show: boolean) => void
-  newBookData: {
-    isbn: string
-    bookName: string
-    authorName: string
-    genre: string
-    readStatus: boolean
-  }
-  setNewBookData: (data: any) => void
+  newBookData: BookFormData
+  setNewBookData: React.Dispatch<React.SetStateAction<BookFormData>>
   handleNewBookSubmit: (e: React.FormEvent) => void
 }
 
@@ -39,12 +40,6 @@ export default function BookAddForm({
 
   const validateField = (name: string, value: string) => {
     let message = ""
-    if (name === "isbn") {
-      const isbnPattern = /^\d{3}-\d{9}[\dX]$/
-      if (!isbnPattern.test(value)) {
-        message = "Enter a valid ISBN (e.g., 978-123456789X)"
-      }
-    }
     if (name === "bookName" && value.trim() === "") {
       message = "Book name can't be empty"
     }
@@ -101,18 +96,6 @@ export default function BookAddForm({
                 placeholder="Enter author name"
               />
               {errors.authorName && <p className="text-red-500 text-sm">{errors.authorName}</p>}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="isbn">ISBN</Label>
-              <Input
-                id="isbn"
-                type="text"
-                value={newBookData.isbn}
-                onChange={(e) => handleChange("isbn", e.target.value)}
-                placeholder="978-123456789X"
-              />
-              {errors.isbn && <p className="text-red-500 text-sm">{errors.isbn}</p>}
             </div>
 
             <div className="space-y-2">

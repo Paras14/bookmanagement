@@ -23,8 +23,8 @@ public class UserBook {
     private Users user;
 
     @ManyToOne
-    @MapsId("bookIsbn")
-    @JoinColumn(name = "book_isbn")
+    @MapsId("bookId")
+    @JoinColumn(name = "book_id")
     private Book book;
 
     @Column(nullable = false)
@@ -34,7 +34,7 @@ public class UserBook {
         this.user = user;
         this.book = book;
         this.readStatus = readStatus;
-        this.id = new UserBookId(user.getId(), book.getIsbn());
+        this.id = new UserBookId(user.getId(), book.getId());
     }
 
 }

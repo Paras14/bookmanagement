@@ -34,22 +34,24 @@ public class BookService {
         Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        Book book = bookRepository.findById(bookDTO.getIsbn())
-                .orElseGet(() -> {
-                    Book newBook = new Book();
-                    newBook.setIsbn(bookDTO.getIsbn());
-                    newBook.setBookName(bookDTO.getBookName());
-                    newBook.setAuthorName(bookDTO.getAuthorName());
-                    newBook.setGenre(bookDTO.getGenre());
-                    return bookRepository.save(newBook);
-                });
+        Book book;
+        if (bookDTO.getId() != null) {
+            book = bookRepository.findById(bookDTO.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Book not found"));
+        } else {
+            book = new Book();
+            book.setBookName(bookDTO.getBookName());
+            book.setAuthorName(bookDTO.getAuthorName());
+            book.setGenre(bookDTO.getGenre());
+            book = bookRepository.save(book);
+        }
 
-        if (userBookRepository.findByUserIdAndBookIsbn(user.getId(), book.getIsbn()).isPresent()){
+        if (userBookRepository.findByUserIdAndBookId(user.getId(), book.getId()).isPresent()){
             throw new IllegalStateException("User already owns this book");
         }
 
         UserBook userBook = new UserBook();
-        userBook.setId(new UserBookId(user.getId(), book.getIsbn()));
+        userBook.setId(new UserBookId(user.getId(), book.getId()));
         userBook.setUser(user);
         userBook.setBook(book);
         userBook.setReadStatus(false);
@@ -73,35 +75,35 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<UserBookDTO> getUserBooksByIsbn(String isbn, String username) {
+    public Optional<UserBookDTO> getUserBookById(Long bookId, String username) {
         Users user = getUserByUsername(username);
-        return userBookRepository.findByUserIdAndBookIsbn(user.getId(), isbn)
+        return userBookRepository.findByUserIdAndBookId(user.getId(), bookId)
                 .map(this::convertToDTO);
     }
 
-    public Optional<UserBookDTO> updateReadStatus(String isbn, String username, boolean readStatus) {
+    public Optional<UserBookDTO> updateReadStatus(Long bookId, String username, boolean readStatus) {
         Users user = getUserByUsername(username);
-        return userBookRepository.findByUserIdAndBookIsbn(user.getId(), isbn)
+        return userBookRepository.findByUserIdAndBookId(user.getId(), bookId)
                 .map(userBook -> {
                     userBook.setReadStatus(readStatus);
                     return convertToDTO(userBookRepository.save(userBook));
                 });
     }
 
-    public void removeBookFromUser(String isbn, String username){
+    public void removeBookFromUser(Long bookId, String username){
         Users user = getUserByUsername(username);
-        userBookRepository.findByUserIdAndBookIsbn(user.getId(), isbn)
+        userBookRepository.findByUserIdAndBookId(user.getId(), bookId)
                 .ifPresent(userBook -> {
                     userBookRepository.delete(userBook);
-                    if (!userBookRepository.existsByBookIsbn(isbn)){
-                        bookRepository.deleteById(isbn);
+                    if (!userBookRepository.existsByBookId(bookId)){
+                        bookRepository.deleteById(bookId);
                     }
                 });
     }
 
-    public void deleteBook(String isbn){
-        bookRepository.findById(isbn).ifPresent(book -> {
-            userBookRepository.deleteByBookIsbn(isbn);
+    public void deleteBook(Long bookId){
+        bookRepository.findById(bookId).ifPresent(book -> {
+            userBookRepository.deleteByBookId(bookId);
             bookRepository.delete(book);
         });
     }
@@ -113,7 +115,7 @@ public class BookService {
 
     private UserBookDTO convertToDTO(UserBook userBook) {
         UserBookDTO dto = new UserBookDTO();
-        dto.setIsbn(userBook.getBook().getIsbn());
+        dto.setId(userBook.getBook().getId());
         dto.setBookName(userBook.getBook().getBookName());
         dto.setAuthorName(userBook.getBook().getAuthorName());
         dto.setGenre(userBook.getBook().getGenre());
@@ -123,7 +125,7 @@ public class BookService {
 
     private BookDTO convertToBookDTO(Book book) {
         BookDTO dto = new BookDTO();
-        dto.setIsbn(book.getIsbn());
+        dto.setId(book.getId());
         dto.setBookName(book.getBookName());
         dto.setAuthorName(book.getAuthorName());
         dto.setGenre(book.getGenre());

@@ -76,7 +76,7 @@ class BookControllerTest {
     @WithMockUser(username = "testUser", roles = "ADMIN")
     void getAllBooks_asAdmin_shouldReturnList() throws Exception {
         var dto = new BookDTO();
-        dto.setIsbn("isbn-1");
+        dto.setId(1L);
         dto.setBookName("Title One");
         dto.setAuthorName("Author A");
         dto.setGenre(Genre.COMEDY);
@@ -86,7 +86,7 @@ class BookControllerTest {
         mockMvc.perform(get("/api/books/admin/all"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].isbn").value("isbn-1"))
+                .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].bookName").value("Title One"))
                 .andExpect(jsonPath("$[0].authorName").value("Author A"))
                 .andExpect(jsonPath("$[0].genre").value("COMEDY"));
@@ -98,7 +98,7 @@ class BookControllerTest {
     @WithMockUser(username = "testUser", roles = "USER")
     void getUserBooks_asUser_shouldReturnList() throws Exception {
         var dto = new UserBookDTO();
-        dto.setIsbn("isbn-2");
+        dto.setId(2L);
         dto.setBookName("Title Two");
         dto.setAuthorName("Author B");
         dto.setGenre(Genre.THRILLER);
@@ -110,7 +110,7 @@ class BookControllerTest {
         mockMvc.perform(get("/api/books")
                         .with(csrf()))  // GET doesn’t need CSRF, but harmless
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].isbn").value("isbn-2"))
+                .andExpect(jsonPath("$[0].id").value(2))
                 .andExpect(jsonPath("$[0].bookName").value("Title Two"))
                 .andExpect(jsonPath("$[0].authorName").value("Author B"))
                 .andExpect(jsonPath("$[0].genre").value("THRILLER"))
@@ -121,71 +121,71 @@ class BookControllerTest {
 
     @Test
     @WithMockUser(username = "testUser")
-    void getUserBookByIsbn_found_shouldReturnOk() throws Exception {
+    void getUserBookById_found_shouldReturnOk() throws Exception {
         var dto = new UserBookDTO();
-        dto.setIsbn("isbn-3");
+        dto.setId(3L);
         dto.setBookName("Title Three");
         dto.setAuthorName("Author C");
         dto.setGenre(Genre.MYSTERY);
         dto.setReadStatus(false);
 
-        when(bookService.getUserBooksByIsbn("isbn-3", "testUser"))
+        when(bookService.getUserBookById(3L, "testUser"))
                 .thenReturn(Optional.of(dto));
 
-        mockMvc.perform(get("/api/books/{isbn}", "isbn-3"))
+        mockMvc.perform(get("/api/books/{bookId}", 3L))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.isbn").value("isbn-3"))
+                .andExpect(jsonPath("$.id").value(3))
                 .andExpect(jsonPath("$.bookName").value("Title Three"))
                 .andExpect(jsonPath("$.authorName").value("Author C"))
                 .andExpect(jsonPath("$.genre").value("MYSTERY"))
                 .andExpect(jsonPath("$.readStatus").value(false));
 
-        verify(bookService).getUserBooksByIsbn("isbn-3", "testUser");
+        verify(bookService).getUserBookById(3L, "testUser");
     }
 
     @Test
     @WithMockUser(username = "testUser")
-    void getUserBookByIsbn_notFound_shouldReturn404() throws Exception {
-        when(bookService.getUserBooksByIsbn("unknown", "testUser"))
+    void getUserBookById_notFound_shouldReturn404() throws Exception {
+        when(bookService.getUserBookById(99L, "testUser"))
                 .thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/books/{isbn}", "unknown"))
+        mockMvc.perform(get("/api/books/{bookId}", 99L))
                 .andExpect(status().isNotFound());
 
-        verify(bookService).getUserBooksByIsbn("unknown", "testUser");
+        verify(bookService).getUserBookById(99L, "testUser");
     }
 
     @Test
     @WithMockUser(username = "testUser", roles = "ADMIN")
     void deleteBook_asAdmin_shouldReturnNoContent() throws Exception {
-        mockMvc.perform(delete("/api/books/admin/{isbn}", "isbn-4")
+        mockMvc.perform(delete("/api/books/admin/{bookId}", 4L)
                         .with(csrf()))
                 .andExpect(status().isNoContent());
 
-        verify(bookService).deleteBook("isbn-4");
+        verify(bookService).deleteBook(4L);
     }
 
     @Test
     @WithMockUser(username = "testUser", roles = "USER")
     void removeBookFromUser_asUser_shouldReturnNoContent() throws Exception {
-        mockMvc.perform(delete("/api/books/{isbn}", "isbn-5")
+        mockMvc.perform(delete("/api/books/{bookId}", 5L)
                         .with(csrf()))
                 .andExpect(status().isNoContent());
 
-        verify(bookService).removeBookFromUser("isbn-5", "testUser");
+        verify(bookService).removeBookFromUser(5L, "testUser");
     }
 
     @Test
     @WithMockUser(username = "testUser", roles = "USER")
     void addBookToUser_asUser_shouldReturnOk() throws Exception {
         var request = new BookDTO();
-        request.setIsbn("isbn-6");
+        request.setId(6L);
         request.setBookName("Title Six");
         request.setAuthorName("Author F");
         request.setGenre(Genre.FANTASY);
 
         var response = new UserBookDTO();
-        response.setIsbn("isbn-6");
+        response.setId(6L);
         response.setBookName("Title Six");
         response.setAuthorName("Author F");
         response.setGenre(Genre.FANTASY);
@@ -200,7 +200,7 @@ class BookControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.isbn").value("isbn-6"))
+                .andExpect(jsonPath("$.id").value(6))
                 .andExpect(jsonPath("$.bookName").value("Title Six"))
                 .andExpect(jsonPath("$.authorName").value("Author F"))
                 .andExpect(jsonPath("$.genre").value("FANTASY"))
@@ -213,45 +213,45 @@ class BookControllerTest {
     @WithMockUser(username = "testUser", roles = "USER")
     void editBookReadStatus_asUser_found_shouldReturnOk() throws Exception {
         var request = new UserBookDTO();
-        request.setIsbn("isbn-7");
+        request.setId(7L);
         request.setBookName("Title Seven");
         request.setAuthorName("Author G");
         request.setGenre(Genre.SCIENCE_FICTION);
         request.setReadStatus(true);
 
-        when(bookService.updateReadStatus("isbn-7", "testUser", true))
+        when(bookService.updateReadStatus(7L, "testUser", true))
                 .thenReturn(Optional.of(request));
 
-        mockMvc.perform(put("/api/books/{isbn}", "isbn-7")
+        mockMvc.perform(put("/api/books/{bookId}", 7L)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.isbn").value("isbn-7"))
+                .andExpect(jsonPath("$.id").value(7))
                 .andExpect(jsonPath("$.readStatus").value(true));
 
-        verify(bookService).updateReadStatus("isbn-7", "testUser", true);
+        verify(bookService).updateReadStatus(7L, "testUser", true);
     }
 
     @Test
     @WithMockUser(username = "testUser", roles = "USER")
     void editBookReadStatus_asUser_notFound_shouldReturn404() throws Exception {
         var request = new UserBookDTO();
-        request.setIsbn("isbn-8");
+        request.setId(8L);
         request.setBookName("Title Eight");
         request.setAuthorName("Author H");
         request.setGenre(Genre.ROMANCE);
         request.setReadStatus(false);
 
-        when(bookService.updateReadStatus("isbn-8", "testUser", false))
+        when(bookService.updateReadStatus(8L, "testUser", false))
                 .thenReturn(Optional.empty());
 
-        mockMvc.perform(put("/api/books/{isbn}", "isbn-8")
+        mockMvc.perform(put("/api/books/{bookId}", 8L)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
 
-        verify(bookService).updateReadStatus("isbn-8", "testUser", false);
+        verify(bookService).updateReadStatus(8L, "testUser", false);
     }
 }

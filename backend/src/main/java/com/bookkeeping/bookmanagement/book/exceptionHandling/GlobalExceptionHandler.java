@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.security.auth.login.FailedLoginException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -96,6 +97,19 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(body);
+    }
+
+    @ExceptionHandler(FailedLoginException.class)
+    public ResponseEntity<ErrorResponse> handleLoginFailed(FailedLoginException ex) {
+        var errors = Map.of("error", ex.getMessage());
+        var body = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                errors
+        );
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(body);
     }
 }

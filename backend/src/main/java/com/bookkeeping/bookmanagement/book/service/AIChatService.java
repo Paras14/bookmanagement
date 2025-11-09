@@ -17,8 +17,8 @@ public class AIChatService {
         this.bookService = bookService;
     }
 
-    public String getChatResponse(String isbn, String question, String username) {
-        UserBookDTO book = bookService.getUserBooksByIsbn(isbn, username)
+    public String getChatResponse(Long bookId, String question, String username) {
+        UserBookDTO book = bookService.getUserBookById(bookId, username)
                 .orElseThrow(() -> new RuntimeException("Book not found or user doesn't have access"));
 
         String message = String.format(

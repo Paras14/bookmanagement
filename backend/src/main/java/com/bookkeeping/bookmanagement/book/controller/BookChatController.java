@@ -17,13 +17,13 @@ public class BookChatController {
         this.aiChatService = aiChatService;
     }
 
-    @PostMapping("/{isbn}")
+    @PostMapping("/{bookId}")
     public ResponseEntity<ChatResponseDTO> chatAboutBook(
-            @PathVariable String isbn,
+            @PathVariable Long bookId,
             @RequestBody ChatRequestDTO chatRequest,
             Authentication authentication) {
         String username = authentication.getName();
-        String response = aiChatService.getChatResponse(isbn, chatRequest.getQuestion(), username);
+        String response = aiChatService.getChatResponse(bookId, chatRequest.getQuestion(), username);
         return ResponseEntity.ok(new ChatResponseDTO(response));
     }
 }

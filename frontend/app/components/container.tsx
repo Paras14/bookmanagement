@@ -8,23 +8,31 @@ import { Plus } from "lucide-react"
 import { apiUrl } from "@/constants"
 
 interface Book {
-  isbn: string
+  id: number
   bookName: string
   authorName: string
   genre: string
   readStatus: boolean
 }
 
+interface NewBookData {
+  bookName: string
+  authorName: string
+  genre: string
+  readStatus: boolean
+}
+
+const initialBookData: NewBookData = {
+  bookName: "",
+  authorName: "",
+  genre: "",
+  readStatus: false,
+}
+
 export default function Container() {
   const [books, setBooks] = useState<Book[]>([])
   const [showForm, setShowForm] = useState(false)
-  const [newBookData, setNewBookData] = useState<Book>({
-    isbn: "",
-    bookName: "",
-    authorName: "",
-    genre: "",
-    readStatus: false,
-  })
+  const [newBookData, setNewBookData] = useState<NewBookData>(initialBookData)
 
   const fetchBooks = useCallback(async () => {
     try {
@@ -47,13 +55,13 @@ export default function Container() {
 
   const addBookFormHandler = () => setShowForm(true)
 
-  const changeBookReadState = async (isbn: string) => {
+  const changeBookReadState = async (bookId: number) => {
     try {
       const token = localStorage.getItem("token")
-      const book = books.find((b) => b.isbn === isbn)
+      const book = books.find((b) => b.id === bookId)
       if (!book) return
       const updated = { readStatus: !book.readStatus }
-      const res = await fetch(`${apiUrl}/api/books/${isbn}`, {
+      const res = await fetch(`${apiUrl}/api/books/${bookId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -69,10 +77,10 @@ export default function Container() {
     }
   }
 
-  const deleteBookFromLibrary = async (isbn: string) => {
+  const deleteBookFromLibrary = async (bookId: number) => {
     try {
       const token = localStorage.getItem("token")
-      const res = await fetch(`${apiUrl}/api/books/${isbn}`, {
+      const res = await fetch(`${apiUrl}/api/books/${bookId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -98,7 +106,7 @@ export default function Container() {
       })
       if (!res.ok) throw new Error("Failed to add book")
       setShowForm(false)
-      setNewBookData({ isbn: "", bookName: "", authorName: "", genre: "", readStatus: false })
+      setNewBookData(initialBookData)
       fetchBooks()
     } catch (error: any) {
       console.error("Error adding new book:", error)
@@ -127,8 +135,8 @@ export default function Container() {
         {books.length > 0 ? (
           books.map((book) => (
             <BookCard
-              key={book.isbn}
-              isbn={book.isbn}
+              key={book.id}
+              bookId={book.id}
               title={book.bookName}
               readStatus={book.readStatus}
               changeBookReadState={changeBookReadState}

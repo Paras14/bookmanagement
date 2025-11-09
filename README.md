@@ -104,7 +104,7 @@ npm run dev
 ```bash
 cd backend
 docker-compose up -d
-docker-compose ps
+docker-compose ps //confirm ollama container running
 docker exec -it ollama ollama pull llama3.2
 ```
 
@@ -114,11 +114,11 @@ docker exec -it ollama ollama pull llama3.2
 * **POST** `/api/auth/login` — Login; returns JWT
 * **GET** `/api/books` — List user’s books
 * **POST** `/api/books` — Add new book
-* **PUT** `/api/books/{isbn}` — Update read status
-* **DELETE** `/api/books/{isbn}` — Remove a book
+* **PUT** `/api/books/{id}` — Update read status
+* **DELETE** `/api/books/{id}` — Remove a book
 * **GET** `/api/books/admin/all` — (ADMIN) List all books
-* **DELETE** `/api/books/admin/{isbn}` — (ADMIN) Delete book
-* **POST** `/api/books/chat/{isbn}` — Chat about a book
+* **DELETE** `/api/books/admin/{id}` — (ADMIN) Delete book
+* **POST** `/api/books/chat/{id}` — Chat about a book
 
 ## Security
 

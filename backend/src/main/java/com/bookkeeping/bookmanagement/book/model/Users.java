@@ -21,7 +21,7 @@ public class Users {
 
     @Column(nullable = false, unique = true)
     @NotBlank
-    @Size(min = 4, max = 20, message = "Username name must be within 8 to 20 characters")
+    @Size(min = 4, max = 20, message = "Username name must be within 4 to 20 characters")
     private String username;
 
     @Column(nullable = false, length = 100)

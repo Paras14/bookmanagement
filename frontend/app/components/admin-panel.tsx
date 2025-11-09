@@ -8,7 +8,7 @@ import { Trash2, Shield } from "lucide-react"
 import { apiUrl } from "@/constants"
 
 interface Book {
-  isbn: string
+  id: number
   bookName: string
   authorName: string
   genre: string
@@ -37,10 +37,10 @@ useEffect(() => {
     fetchAllBooks();
   }, [fetchAllBooks]);
 
-  const deleteBook = async (isbn: string) => {
+  const deleteBook = async (bookId: number) => {
     try {
       const token = localStorage.getItem("token")
-      const res = await fetch(`${apiUrl}/api/books/admin/${isbn}`, {
+      const res = await fetch(`${apiUrl}/api/books/admin/${bookId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -66,7 +66,7 @@ useEffect(() => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ISBN</TableHead>
+                <TableHead>ID</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead>Author</TableHead>
                 <TableHead>Genre</TableHead>
@@ -76,8 +76,8 @@ useEffect(() => {
             </TableHeader>
             <TableBody>
               {books.map((book) => (
-                <TableRow key={book.isbn} className="hover:bg-gray-50">
-                  <TableCell className="font-mono text-sm">{book.isbn}</TableCell>
+                <TableRow key={book.id} className="hover:bg-gray-50">
+                  <TableCell className="font-mono text-sm">{book.id}</TableCell>
                   <TableCell className="font-medium">{book.bookName}</TableCell>
                   <TableCell>{book.authorName}</TableCell>
                   <TableCell>
@@ -96,7 +96,7 @@ useEffect(() => {
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
-                      onClick={() => deleteBook(book.isbn)}
+                      onClick={() => deleteBook(book.id)}
                       variant="destructive"
                       size="sm"
                       className="flex items-center space-x-1"

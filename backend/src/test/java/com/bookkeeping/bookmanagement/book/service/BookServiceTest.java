@@ -45,19 +45,19 @@ class BookServiceTest {
         user.setUsername("john");
 
         book = new Book();
-        book.setIsbn("isbn-12345");
+        book.setId(12345L);
         book.setBookName("BookName");
         book.setAuthorName("Author");
         book.setGenre(Book.Genre.FANTASY);
 
         userBook = new UserBook();
-        userBook.setId(new UserBookId(user.getId(), book.getIsbn()));
+        userBook.setId(new UserBookId(user.getId(), book.getId()));
         userBook.setUser(user);
         userBook.setBook(book);
         userBook.setReadStatus(false);
 
         bookDTO = new BookDTO();
-        bookDTO.setIsbn(book.getIsbn());
+        bookDTO.setId(book.getId());
         bookDTO.setBookName(book.getBookName());
         bookDTO.setAuthorName(book.getAuthorName());
         bookDTO.setGenre(book.getGenre());
@@ -66,23 +66,23 @@ class BookServiceTest {
     @Test
     void addBookToUser_existingBook_success() {
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
-        when(bookRepository.findById("isbn-12345")).thenReturn(Optional.of(book));
-        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-12345"))
+        when(bookRepository.findById(12345L)).thenReturn(Optional.of(book));
+        when(userBookRepository.findByUserIdAndBookId(1L, 12345L))
                 .thenReturn(Optional.empty());
         when(userBookRepository.save(any(UserBook.class))).thenReturn(userBook);
 
         UserBookDTO result = bookService.addBookToUser(bookDTO, "john");
 
-        assertThat(result.getIsbn()).isEqualTo(book.getIsbn());
+        assertThat(result.getId()).isEqualTo(book.getId());
         verify(bookRepository, never()).save(any());
         verify(userBookRepository).save(any(UserBook.class));
     }
 
     @Test
     void addBookToUser_newBook_success() {
+        bookDTO.setId(null);
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
-        when(bookRepository.findById("isbn-12345")).thenReturn(Optional.empty());
-        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-12345"))
+        when(userBookRepository.findByUserIdAndBookId(1L, 12345L))
                 .thenReturn(Optional.empty());
         when(bookRepository.save(any(Book.class))).thenReturn(book);
         when(userBookRepository.save(any(UserBook.class))).thenReturn(userBook);
@@ -104,8 +104,8 @@ class BookServiceTest {
     @Test
     void addBookToUser_duplicate_throws() {
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
-        when(bookRepository.findById("isbn-12345")).thenReturn(Optional.of(book));
-        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-12345"))
+        when(bookRepository.findById(12345L)).thenReturn(Optional.of(book));
+        when(userBookRepository.findByUserIdAndBookId(1L, 12345L))
                 .thenReturn(Optional.of(userBook));
 
         assertThatThrownBy(() -> bookService.addBookToUser(bookDTO, "john"))
@@ -121,7 +121,7 @@ class BookServiceTest {
         List<UserBookDTO> result = bookService.getUserBooks("john");
 
         assertThat(result).hasSize(1);
-        assertThat(result.getFirst().getIsbn()).isEqualTo(book.getIsbn());
+        assertThat(result.getFirst().getId()).isEqualTo(book.getId());
     }
 
     @Test
@@ -139,26 +139,26 @@ class BookServiceTest {
         List<BookDTO> result = bookService.getAllBooks();
 
         assertThat(result).hasSize(1);
-        assertThat(result.getFirst().getIsbn()).isEqualTo(book.getIsbn());
+        assertThat(result.getFirst().getId()).isEqualTo(book.getId());
     }
 
     @Test
-    void getUserBooksByIsbn_found() {
+    void getUserBookById_found() {
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-1")).thenReturn(Optional.of(userBook));
+        when(userBookRepository.findByUserIdAndBookId(1L, 1L)).thenReturn(Optional.of(userBook));
 
-        Optional<UserBookDTO> result = bookService.getUserBooksByIsbn("isbn-1", "john");
+        Optional<UserBookDTO> result = bookService.getUserBookById(1L, "john");
 
         assertThat(result).isPresent();
-        assertThat(result.get().getIsbn()).isEqualTo(book.getIsbn());
+        assertThat(result.get().getId()).isEqualTo(book.getId());
     }
 
     @Test
-    void getUserBooksByIsbn_notFound() {
+    void getUserBookById_notFound() {
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-1")).thenReturn(Optional.empty());
+        when(userBookRepository.findByUserIdAndBookId(1L, 1L)).thenReturn(Optional.empty());
 
-        Optional<UserBookDTO> result = bookService.getUserBooksByIsbn("isbn-1", "john");
+        Optional<UserBookDTO> result = bookService.getUserBookById(1L, "john");
 
         assertThat(result).isEmpty();
     }
@@ -166,10 +166,10 @@ class BookServiceTest {
     @Test
     void updateReadStatus_found() {
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-1")).thenReturn(Optional.of(userBook));
+        when(userBookRepository.findByUserIdAndBookId(1L, 1L)).thenReturn(Optional.of(userBook));
         when(userBookRepository.save(any(UserBook.class))).thenReturn(userBook);
 
-        Optional<UserBookDTO> result = bookService.updateReadStatus("isbn-1", "john", true);
+        Optional<UserBookDTO> result = bookService.updateReadStatus(1L, "john", true);
 
         assertThat(result).isPresent();
         verify(userBookRepository).save(argThat(UserBook::isReadStatus));
@@ -178,9 +178,9 @@ class BookServiceTest {
     @Test
     void updateReadStatus_notFound() {
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-1")).thenReturn(Optional.empty());
+        when(userBookRepository.findByUserIdAndBookId(1L, 1L)).thenReturn(Optional.empty());
 
-        Optional<UserBookDTO> result = bookService.updateReadStatus("isbn-1", "john", true);
+        Optional<UserBookDTO> result = bookService.updateReadStatus(1L, "john", true);
 
         assertThat(result).isEmpty();
     }
@@ -188,55 +188,55 @@ class BookServiceTest {
     @Test
     void removeBookFromUser_deletesBookAndUserBook() {
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-1")).thenReturn(Optional.of(userBook));
-        when(userBookRepository.existsByBookIsbn("isbn-1")).thenReturn(false);
+        when(userBookRepository.findByUserIdAndBookId(1L, 1L)).thenReturn(Optional.of(userBook));
+        when(userBookRepository.existsByBookId(1L)).thenReturn(false);
 
-        bookService.removeBookFromUser("isbn-1", "john");
+        bookService.removeBookFromUser(1L, "john");
 
         verify(userBookRepository).delete(userBook);
-        verify(bookRepository).deleteById("isbn-1");
+        verify(bookRepository).deleteById(1L);
     }
 
     @Test
     void removeBookFromUser_keepsBookIfExistsOtherUser() {
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-1")).thenReturn(Optional.of(userBook));
-        when(userBookRepository.existsByBookIsbn("isbn-1")).thenReturn(true);
+        when(userBookRepository.findByUserIdAndBookId(1L, 1L)).thenReturn(Optional.of(userBook));
+        when(userBookRepository.existsByBookId(1L)).thenReturn(true);
 
-        bookService.removeBookFromUser("isbn-1", "john");
+        bookService.removeBookFromUser(1L, "john");
 
         verify(userBookRepository).delete(userBook);
-        verify(bookRepository, never()).deleteById(anyString());
+        verify(bookRepository, never()).deleteById(anyLong());
     }
 
     @Test
     void removeBookFromUser_noUserBook_nothingHappens() {
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
-        when(userBookRepository.findByUserIdAndBookIsbn(1L, "isbn-1")).thenReturn(Optional.empty());
+        when(userBookRepository.findByUserIdAndBookId(1L, 1L)).thenReturn(Optional.empty());
 
-        bookService.removeBookFromUser("isbn-1", "john");
+        bookService.removeBookFromUser(1L, "john");
 
         verify(userBookRepository, never()).delete(any());
-        verify(bookRepository, never()).deleteById(anyString());
+        verify(bookRepository, never()).deleteById(anyLong());
     }
 
     @Test
     void deleteBook_exists_deletesBookAndUserBooks() {
-        when(bookRepository.findById("isbn-1")).thenReturn(Optional.of(book));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
-        bookService.deleteBook("isbn-1");
+        bookService.deleteBook(1L);
 
-        verify(userBookRepository).deleteByBookIsbn("isbn-1");
+        verify(userBookRepository).deleteByBookId(1L);
         verify(bookRepository).delete(book);
     }
 
     @Test
     void deleteBook_notExists_doesNothing() {
-        when(bookRepository.findById("isbn-1")).thenReturn(Optional.empty());
+        when(bookRepository.findById(1L)).thenReturn(Optional.empty());
 
-        bookService.deleteBook("isbn-1");
+        bookService.deleteBook(1L);
 
-        verify(userBookRepository, never()).deleteByBookIsbn(anyString());
+        verify(userBookRepository, never()).deleteByBookId(anyLong());
         verify(bookRepository, never()).delete(any(Book.class));
     }
 }

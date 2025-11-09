@@ -36,26 +36,26 @@ public class BookController {
         return ResponseEntity.ok(userBooks);
     }
 
-    @GetMapping("/{isbn}")
-     public ResponseEntity<UserBookDTO> getUserBookByIsbn(@PathVariable String isbn, Authentication authentication) {
+    @GetMapping("/{bookId}")
+    public ResponseEntity<UserBookDTO> getUserBookById(@PathVariable Long bookId, Authentication authentication) {
         String username = authentication.getName();
-        return bookService.getUserBooksByIsbn(isbn, username)
+        return bookService.getUserBookById(bookId, username)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/admin/{isbn}")
+    @DeleteMapping("/admin/{bookId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteBook(@PathVariable String isbn){
-        bookService.deleteBook(isbn);
+    public ResponseEntity<Void> deleteBook(@PathVariable Long bookId){
+        bookService.deleteBook(bookId);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{isbn}")
+    @DeleteMapping("/{bookId}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Void> removeBookFromUser(@PathVariable String isbn, Authentication authentication){
+    public ResponseEntity<Void> removeBookFromUser(@PathVariable Long bookId, Authentication authentication){
         String username = authentication.getName();
-        bookService.removeBookFromUser(isbn, username);
+        bookService.removeBookFromUser(bookId, username);
         return ResponseEntity.noContent().build();
     }
 
@@ -66,21 +66,21 @@ public class BookController {
         UserBookDTO userBookDTO = bookService.addBookToUser(bookDTO, username);
 //
 //        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-//                .path("/{isbn}")
-//                .buildAndExpand(userBook.getBook().getIsbn())
+//                .path("/{bookId}")
+//                .buildAndExpand(userBook.getBook().getId())
 //                .toUri();
 
         return ResponseEntity.ok(userBookDTO);
     }
 
-    @PutMapping("/{isbn}")
+    @PutMapping("/{bookId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UserBookDTO> editBookReadStatus(
-            @PathVariable String isbn,
+            @PathVariable Long bookId,
             @RequestBody UserBookDTO userBookDTO,
             Authentication authentication) {
         String username = authentication.getName();
-        return bookService.updateReadStatus(isbn, username, userBookDTO.isReadStatus())
+        return bookService.updateReadStatus(bookId, username, userBookDTO.isReadStatus())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

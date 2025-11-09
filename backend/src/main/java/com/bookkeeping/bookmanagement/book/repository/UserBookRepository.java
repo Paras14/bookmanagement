@@ -12,20 +12,20 @@ import java.util.Optional;
 public interface UserBookRepository extends JpaRepository<UserBook, UserBookId> {
 
     List<UserBook> findByUserId(Long userId);
-    Optional<UserBook> findByUserIdAndBookIsbn(Long userId, String bookIsbn);
-    boolean existsByBookIsbn(String isbn);
-    void deleteByBookIsbn(String isbn);
+    Optional<UserBook> findByUserIdAndBookId(Long userId, Long bookId);
+    boolean existsByBookId(Long bookId);
+    void deleteByBookId(Long bookId);
 
 
-//    @Query("SELECT ub FROM UserBook ub WHERE ub.user.id = :userId AND ub.book.isbn = :bookIsbn")
-//    Optional<UserBook> findByUserIdAndBookIsbn(@Param("userId") Long userId,
-//                                               @Param("bookIsbn") String bookIsbn);
+//    @Query("SELECT ub FROM UserBook ub WHERE ub.user.id = :userId AND ub.book.id = :bookId")
+//    Optional<UserBook> findByUserIdAndBookId(@Param("userId") Long userId,
+//                                             @Param("bookId") Long bookId);
 
-//    @Query("SELECT COUNT(ub) > 0 FROM UserBook ub WHERE ub.book.isbn = :isbn")
-//    boolean existsByBookIsbn(String isbn);
+//    @Query("SELECT COUNT(ub) > 0 FROM UserBook ub WHERE ub.book.id = :bookId")
+//    boolean existsByBookId(Long bookId);
 
-//    @Query("DELETE FROM UserBook ub WHERE ub.book.isbn = :isbn")
-//    void deleteByBookIsbn(String isbn);
+//    @Query("DELETE FROM UserBook ub WHERE ub.book.id = :bookId")
+//    void deleteByBookId(Long bookId);
 
 
 }

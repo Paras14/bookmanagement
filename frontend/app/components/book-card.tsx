@@ -7,14 +7,20 @@ import { Trash2, MessageCircle, X } from "lucide-react"
 import BookChat from "./ai-chat/book-chat"
 
 interface BookCardProps {
-  isbn: string
+  bookId: number
   title: string
   readStatus: boolean
-  changeBookReadState: (isbn: string) => void
-  deleteBookFromLibrary: (isbn: string) => void
+  changeBookReadState: (bookId: number) => void
+  deleteBookFromLibrary: (bookId: number) => void
 }
 
-const BookCard: React.FC<BookCardProps> = ({ isbn, title, readStatus, changeBookReadState, deleteBookFromLibrary }) => {
+const BookCard: React.FC<BookCardProps> = ({
+  bookId,
+  title,
+  readStatus,
+  changeBookReadState,
+  deleteBookFromLibrary,
+}) => {
   const [showChat, setShowChat] = useState(false)
 
   return (
@@ -39,7 +45,7 @@ const BookCard: React.FC<BookCardProps> = ({ isbn, title, readStatus, changeBook
 
             <div className="flex space-x-1">
               <Button
-                onClick={() => deleteBookFromLibrary(isbn)}
+                onClick={() => deleteBookFromLibrary(bookId)}
                 variant="destructive"
                 size="sm"
                 className="flex-1 p-1 text-xs"
@@ -47,7 +53,7 @@ const BookCard: React.FC<BookCardProps> = ({ isbn, title, readStatus, changeBook
                 <Trash2 className="w-4 h-4" />
               </Button>
               <Button
-                onClick={() => changeBookReadState(isbn)}
+                onClick={() => changeBookReadState(bookId)}
                 variant="default"
                 size="sm"
                 className={`flex-1 text-xs font-semibold ${
@@ -79,7 +85,7 @@ const BookCard: React.FC<BookCardProps> = ({ isbn, title, readStatus, changeBook
               </Button>
             </div>
             <div className="p-4">
-              <BookChat isbn={isbn} bookName={title} />
+              <BookChat bookId={bookId} bookName={title} />
             </div>
           </div>
         </div>

@@ -8,11 +8,11 @@ import { Send, Loader2 } from "lucide-react"
 import { apiUrl } from "@/constants"
 
 interface BookChatProps {
-  isbn: string
+  bookId: number
   bookName: string
 }
 
-export default function BookChat({ isbn, bookName }: BookChatProps) {
+export default function BookChat({ bookId, bookName }: BookChatProps) {
   const [question, setQuestion] = useState("")
   const [answer, setAnswer] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -24,7 +24,7 @@ export default function BookChat({ isbn, bookName }: BookChatProps) {
     try {
       const token = localStorage.getItem("token")
       const res = await fetch(
-        `${apiUrl}/api/books/chat/${isbn}`,
+        `${apiUrl}/api/books/chat/${bookId}`,
         {
           method: "POST",
           headers: {

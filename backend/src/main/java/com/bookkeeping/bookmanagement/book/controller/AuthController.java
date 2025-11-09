@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import javax.security.auth.login.FailedLoginException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody UsersDTO user) {
+    public ResponseEntity<?> loginUser(@RequestBody UsersDTO user) throws FailedLoginException {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
@@ -51,7 +52,7 @@ public class AuthController {
             response.put("token", jwt);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            throw new FailedLoginException("Invalid username or password");
         }
     }
 

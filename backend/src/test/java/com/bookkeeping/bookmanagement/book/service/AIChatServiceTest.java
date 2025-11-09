@@ -45,24 +45,24 @@ class AIChatServiceTest {
 
     @Test
     void getChatResponse_whenBookFound_returnsAIResponse() {
-        String isbn = "isbn-12345";
+        Long bookId = 12345L;
         String username = "JohnDoe";
         String question = "What is the main theme?";
 
         UserBookDTO dto = new UserBookDTO();
-        dto.setIsbn(isbn);
+        dto.setId(bookId);
         dto.setBookName("BookTitle");
         dto.setAuthorName("AuthorX");
         dto.setGenre(Book.Genre.MYSTERY);
         dto.setReadStatus(true);
 
-        when(bookService.getUserBooksByIsbn(isbn, username)).thenReturn(Optional.of(dto));
+        when(bookService.getUserBookById(bookId, username)).thenReturn(Optional.of(dto));
         when(chatClient.prompt()).thenReturn(requestSpec);
         when(requestSpec.user(anyString())).thenReturn(requestSpec);
         when(requestSpec.call()).thenReturn(responseSpec);
         when(responseSpec.content()).thenReturn("This is an AI response");
 
-        String result = aiChatService.getChatResponse(isbn, question, username);
+        String result = aiChatService.getChatResponse(bookId, question, username);
 
         assertThat(result).isEqualTo("This is an AI response");
 
@@ -77,10 +77,10 @@ class AIChatServiceTest {
 
     @Test
     void getChatResponse_whenBookNotFound_throws() {
-        when(bookService.getUserBooksByIsbn("isbn123456", "testUser")).thenReturn(Optional.empty());
+        when(bookService.getUserBookById(999L, "testUser")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
-                aiChatService.getChatResponse("isbn123456", "Who wrote this?", "testUser")
+                aiChatService.getChatResponse(999L, "Who wrote this?", "testUser")
         ).isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Book not found");
     }

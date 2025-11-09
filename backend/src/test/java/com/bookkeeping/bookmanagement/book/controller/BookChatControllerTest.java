@@ -53,33 +53,33 @@ class BookChatControllerTest {
     @Test
     @WithMockUser(username = "testUser")
     void chatAboutBook_shouldReturnChatResponse() throws Exception {
-        String isbn = "isbn-12345";
+        Long bookId = 12345L;
         String question = "What is it about?";
         String expectedResponse = "It is about testing.";
 
-        when(aiChatService.getChatResponse(isbn, question, "testUser"))
+        when(aiChatService.getChatResponse(bookId, question, "testUser"))
                 .thenReturn(expectedResponse);
 
         ChatRequestDTO requestDto = new ChatRequestDTO();
         requestDto.setQuestion(question);
 
-        mockMvc.perform(post("/api/books/chat/{isbn}", isbn)
+        mockMvc.perform(post("/api/books/chat/{bookId}", bookId)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.answer").value(expectedResponse));
 
-        verify(aiChatService, times(1)).getChatResponse(isbn, question, "testUser");
+        verify(aiChatService, times(1)).getChatResponse(bookId, question, "testUser");
     }
 
     @Test
     void chatAboutBook_whenUnauthenticated_shouldReturnUnauthorized() throws Exception {
-        String isbn = "isbn-12345";
+        Long bookId = 12345L;
         ChatRequestDTO requestDto = new ChatRequestDTO();
         requestDto.setQuestion("Hello");
 
-        mockMvc.perform(post("/api/books/chat/{isbn}", isbn)
+        mockMvc.perform(post("/api/books/chat/{bookId}", bookId)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))

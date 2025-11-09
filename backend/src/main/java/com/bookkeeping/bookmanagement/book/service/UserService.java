@@ -49,18 +49,18 @@ public class UserService {
         return bookRepository.findAll();
     }
 
-    public Optional<UserBook> getUserBookByIsbn(String isbn, String username){
+    public Optional<UserBook> getUserBookById(Long bookId, String username){
         Users user = this.getUserByUsername(username);
-        return  userBookRepository.findByUserIdAndBookIsbn(user.getId(), isbn);
+        return  userBookRepository.findByUserIdAndBookId(user.getId(), bookId);
     }
 
     public UserBook addBookToUser(Book book, String username) {
         Users user = getUserByUsername(username);
 
-        Optional<Book> existingBook = bookRepository.findById(book.getIsbn());
+        Optional<Book> existingBook = book.getId() != null ? bookRepository.findById(book.getId()) : Optional.empty();
         Book savedBook = existingBook.orElseGet(() -> bookRepository.save(book));
 
-        Optional<UserBook> userBookOptional = userBookRepository.findByUserIdAndBookIsbn(user.getId(), savedBook.getIsbn());
+        Optional<UserBook> userBookOptional = userBookRepository.findByUserIdAndBookId(user.getId(), savedBook.getId());
         if (userBookOptional.isPresent()){
             throw new IllegalStateException("User already owns this book");
         }
@@ -69,9 +69,9 @@ public class UserService {
         return userBookRepository.save(userBook);
     }
 
-    public UserBook updateReadStatus(String isbn, String username, boolean readStatus) {
+    public UserBook updateReadStatus(Long bookId, String username, boolean readStatus) {
         Users user = this.getUserByUsername(username);
-        Optional<UserBook> userBookOptional = userBookRepository.findByUserIdAndBookIsbn(user.getId(), isbn);
+        Optional<UserBook> userBookOptional = userBookRepository.findByUserIdAndBookId(user.getId(), bookId);
 
         if (userBookOptional.isPresent()) {
             UserBook userBook = userBookOptional.get();
@@ -83,27 +83,27 @@ public class UserService {
     }
 
     //admin only
-    public void deleteBook(String isbn) {
-        if(bookRepository.existsById(isbn)){
-            userBookRepository.deleteByBookIsbn(isbn);
-            bookRepository.deleteById(isbn);
+    public void deleteBook(Long bookId) {
+        if(bookRepository.existsById(bookId)){
+            userBookRepository.deleteByBookId(bookId);
+            bookRepository.deleteById(bookId);
         } else {
             throw new IllegalStateException("Book not found");
         }
     }
 
-    public void removeBookFromUser(String isbn, String username) {
+    public void removeBookFromUser(Long bookId, String username) {
         Users user = getUserByUsername(username);
         Optional<UserBook> userBookOptional = userBookRepository
-                .findByUserIdAndBookIsbn(user.getId(), isbn);
+                .findByUserIdAndBookId(user.getId(), bookId);
 
         if (userBookOptional.isPresent()){
             UserBook userBook = userBookOptional.get();
             userBookRepository.delete(userBook);
 
-            boolean isBookOwnedByAnyUser = userBookRepository.existsByBookIsbn(isbn);
+            boolean isBookOwnedByAnyUser = userBookRepository.existsByBookId(bookId);
             if (!isBookOwnedByAnyUser) {
-                bookRepository.deleteById(isbn);
+                bookRepository.deleteById(bookId);
             }
         } else {
             throw new IllegalStateException("User does not own this book");
