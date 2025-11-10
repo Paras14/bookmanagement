@@ -12,6 +12,7 @@ interface BookCardProps {
   readStatus: boolean
   changeBookReadState: (bookId: number) => void
   deleteBookFromLibrary: (bookId: number) => void
+  readOnly?: boolean
 }
 
 const BookCard: React.FC<BookCardProps> = ({
@@ -20,6 +21,7 @@ const BookCard: React.FC<BookCardProps> = ({
   readStatus,
   changeBookReadState,
   deleteBookFromLibrary,
+  readOnly = false,
 }) => {
   const [showChat, setShowChat] = useState(false)
 
@@ -34,9 +36,10 @@ const BookCard: React.FC<BookCardProps> = ({
 
           <div className="space-y-1">
             <Button
-              onClick={() => setShowChat(!showChat)}
+              onClick={() => !readOnly && setShowChat(!showChat)}
               variant="default"
               size="sm"
+              disabled={readOnly}
               className="w-full flex items-center justify-center space-x-1 bg-gradient-to-r from-green-400 to-blue-500 text-white py-1"
             >
               <MessageCircle className="w-4 h-4" />
@@ -70,7 +73,7 @@ const BookCard: React.FC<BookCardProps> = ({
       </div>
 
       {/* Chat Modal */}
-      {showChat && (
+      {showChat && !readOnly && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-sm max-h-[80vh] overflow-hidden">
             <div className="flex justify-between items-center p-4 border-b">

@@ -23,9 +23,14 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [showRegister, setShowRegister] = useState(false)
+  const [isGuest, setIsGuest] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem("token")
+    const guest = localStorage.getItem("guest") === "true"
+    if (guest) {
+      setIsGuest(true)
+    }
     if (token) {
       try {
         const decodedToken = jwtDecode(token)
@@ -51,16 +56,34 @@ export default function App() {
     setIsAdmin(false)
   }
 
+  const enterGuestMode = () => {
+    localStorage.setItem("guest", "true")
+    setIsGuest(true)
+  }
+
+  const exitGuestMode = () => {
+    localStorage.removeItem("guest")
+    setIsGuest(false)
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-50 to-amber-50">
-      <Header isAuthenticated={isAuthenticated} isAdmin={isAdmin} onLogout={handleLogout} />
+      <Header
+        isAuthenticated={isAuthenticated}
+        isAdmin={isAdmin}
+        isGuest={isGuest}
+        onLogout={handleLogout}
+        onExitGuest={exitGuestMode}
+      />
 
       <main className="flex-1">
-        {isAuthenticated ? (
+        {isGuest ? (
+          <Container isGuest={true} />
+        ) : isAuthenticated ? (
           isAdmin ? (
             <AdminPanel />
           ) : (
-            <Container />
+            <Container isGuest={false} />
           )
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-6">
@@ -75,6 +98,13 @@ export default function App() {
             <Button variant="outline" onClick={() => setShowRegister(!showRegister)} className="w-48">
               {showRegister ? "Switch to Login" : "Switch to Register"}
             </Button>
+
+            <div className="pt-2 flex flex-col items-center space-y-2">
+              <p className="text-sm text-gray-600">Just exploring?</p>
+              <Button variant="secondary" onClick={enterGuestMode} className="w-48">
+                Continue as Guest
+              </Button>
+            </div>
           </div>
         )}
       </main>

@@ -29,10 +29,15 @@ const initialBookData: NewBookData = {
   readStatus: false,
 }
 
-export default function Container() {
+export default function Container({ isGuest = false }: { isGuest?: boolean }) {
   const [books, setBooks] = useState<Book[]>([])
   const [showForm, setShowForm] = useState(false)
   const [newBookData, setNewBookData] = useState<NewBookData>(initialBookData)
+  const guestBooks: Book[] = [
+    { id: 1, bookName: "Emil und die Detektiv", authorName: "Erich Kästner", genre: "MYSTERY", readStatus: false },
+    { id: 2, bookName: "Atomic habits", authorName: "James Clear", genre: "SELF_HELP", readStatus: true },
+    { id: 3, bookName: "Crime and punishment", authorName: "Fyodor Dostoevsky", genre: "THRILLER", readStatus: false },
+  ]
 
   const fetchBooks = useCallback(async () => {
     try {
@@ -50,13 +55,23 @@ export default function Container() {
   }, [apiUrl]);
 
   useEffect(() => {
+    if (isGuest) {
+      setBooks(guestBooks)
+      return
+    }
     fetchBooks()
-  }, [fetchBooks])
+  }, [fetchBooks, isGuest])
 
-  const addBookFormHandler = () => setShowForm(true)
+  const addBookFormHandler = () => {
+    setShowForm(true)
+  }
 
   const changeBookReadState = async (bookId: number) => {
     try {
+      if (isGuest) {
+        setBooks((prev) => prev.map((b) => (b.id === bookId ? { ...b, readStatus: !b.readStatus } : b)))
+        return
+      }
       const token = localStorage.getItem("token")
       const book = books.find((b) => b.id === bookId)
       if (!book) return
@@ -79,6 +94,10 @@ export default function Container() {
 
   const deleteBookFromLibrary = async (bookId: number) => {
     try {
+      if (isGuest) {
+        setBooks((prev) => prev.filter((b) => b.id !== bookId))
+        return
+      }
       const token = localStorage.getItem("token")
       const res = await fetch(`${apiUrl}/api/books/${bookId}`, {
         method: "DELETE",
@@ -95,6 +114,20 @@ export default function Container() {
   const handleNewBookSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
+      if (isGuest) {
+        const nextId = (books.reduce((m, b) => Math.max(m, b.id), 0) || 0) + 1
+        const created: Book = {
+          id: nextId,
+          bookName: newBookData.bookName,
+          authorName: newBookData.authorName,
+          genre: newBookData.genre,
+          readStatus: newBookData.readStatus,
+        }
+        setBooks((prev) => [...prev, created])
+        setShowForm(false)
+        setNewBookData(initialBookData)
+        return
+      }
       const token = localStorage.getItem("token")
       const res = await fetch(`${apiUrl}/api/books`, {
         method: "POST",
@@ -116,6 +149,11 @@ export default function Container() {
 
   return (
     <div className="container mx-auto p-8 space-y-8">
+      {isGuest && (
+        <div className="text-center text-sm text-gray-600">
+          You are browsing in Guest mode. Changes will not be saved.
+        </div>
+      )}
       <div className="flex justify-center">
         <Button onClick={addBookFormHandler} size="lg" className="flex items-center space-x-2">
           <Plus className="w-5 h-5" />
@@ -139,6 +177,7 @@ export default function Container() {
               bookId={book.id}
               title={book.bookName}
               readStatus={book.readStatus}
+              readOnly={isGuest}
               changeBookReadState={changeBookReadState}
               deleteBookFromLibrary={deleteBookFromLibrary}
             />
