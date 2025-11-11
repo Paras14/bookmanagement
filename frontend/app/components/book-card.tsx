@@ -2,7 +2,7 @@
 
 import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { CardContent } from "@/components/ui/card"
 import { Trash2, MessageCircle, X } from "lucide-react"
 import BookChat from "./ai-chat/book-chat"
 
@@ -32,7 +32,7 @@ const BookCard: React.FC<BookCardProps> = ({
       {/* Cover */}
       <div className="absolute left-3 top-1 bottom-1 right-0 bg-gradient-to-br from-[#f5f5dc] to-[#e0d7c3] rounded-lg shadow-lg transform rotate-y-2 origin-left overflow-hidden">
         <CardContent className="p-2 flex flex-col justify-between h-full text-gray-900">
-          <h3 className="font-[var(--font-oswald)] text-sm font-bold text-center truncate">{title}</h3>
+          <h3 className="font-[var(--font-oswald)] text-sm text-center truncate">{title}</h3>
 
           <div className="space-y-1">
             <Button
@@ -45,6 +45,9 @@ const BookCard: React.FC<BookCardProps> = ({
               <MessageCircle className="w-4 h-4" />
               <span className="text-xs">{showChat ? "Hide Chat" : "AI Chat"}</span>
             </Button>
+            {readOnly && (
+              <p className="text-[10px] text-center text-gray-500 mt-1">Log in to use the chat feature.</p>
+            )}
 
             <div className="flex space-x-1">
               <Button
