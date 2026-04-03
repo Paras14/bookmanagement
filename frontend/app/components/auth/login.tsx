@@ -113,7 +113,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
     setIsLoading(true)
 
     try {
-      if (!apiUrl) {
+      if (apiUrl === undefined || apiUrl === null) {
         throw new Error("API URL is not defined");
       }
       const response = await fetch(`${apiUrl}/api/auth/login`, {

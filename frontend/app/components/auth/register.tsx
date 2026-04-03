@@ -113,7 +113,7 @@ export default function Register({ onRegisterSuccess }: RegisterProps) {
     setIsLoading(true)
 
     try {
-      if (!apiUrl) {
+      if (apiUrl === undefined || apiUrl === null) {
           throw new Error("API URL is not defined");
         }
       const response = await fetch(`${apiUrl}/api/auth/register`, {
