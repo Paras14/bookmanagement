@@ -14,6 +14,10 @@ on:
           - production
           - skip-deploy
 
+permissions:
+  contents: read
+  checks: write
+
 jobs:
   test:
     name: Run Tests
@@ -37,6 +41,14 @@ jobs:
         run: |
           chmod +x ./mvnw
           ./mvnw -B test
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Test Results
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
 
       - name: Upload test results
         if: failure()
@@ -62,11 +74,29 @@ jobs:
           image-ref: 'shelfsense-backend:scan'
           format: 'table'
           severity: 'CRITICAL,HIGH'
-          exit-code: '0'
+          exit-code: '1'
+          limit-severities-for-exit-code: true
+
+      - name: Generate Trivy SARIF report
+        uses: aquasecurity/trivy-action@v0.35.0
+        if: always()
+        with:
+          image-ref: 'shelfsense-backend:scan'
+          format: 'sarif'
+          severity: 'CRITICAL,HIGH'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-security-report
+          path: trivy-results.sarif
+          retention-days: 30
 
   deploy:
     name: Deploy to Hetzner
-    needs: [test]
+    needs: [test, security-scan]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event.inputs.environment == 'production')
     steps:
