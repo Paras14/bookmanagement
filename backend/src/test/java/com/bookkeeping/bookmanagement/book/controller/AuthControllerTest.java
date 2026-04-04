@@ -151,7 +151,7 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid username or password"));
+                .andExpect(jsonPath("$.errors.error").value("Invalid username or password"));
     }
 
     @Test
