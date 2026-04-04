@@ -35,6 +35,7 @@ services:
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       CHAT_API_KEY: ${CHAT_API_KEY}
       CHAT_MODEL: ${CHAT_MODEL}
+      FRONTEND_URL: https://shelfsense.heyparas.dev
 
   frontend:
     build:
